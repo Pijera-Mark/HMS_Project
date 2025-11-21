@@ -46,6 +46,7 @@
                                 <td><?= esc($patient['phone']) ?></td>
                                 <td><?= esc($patient['email']) ?></td>
                                 <td>
+                                    <a href="/patients/show/<?= $patient['patient_id'] ?>" class="btn btn-sm btn-info me-1"><i class="fas fa-eye"></i> View</a>
                                     <a href="/patients/edit/<?= $patient['patient_id'] ?>" class="btn btn-sm btn-warning me-1"><i class="fas fa-edit"></i> Edit</a>
                                     <a href="/patients/delete/<?= $patient['patient_id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this patient?');"><i class="fas fa-trash"></i> Delete</a>
                                 </td>
