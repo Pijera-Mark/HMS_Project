@@ -3,7 +3,12 @@
 <?= $this->section('content') ?>
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="fas fa-users-cog me-2"></i>Users</h1>
+        <div class="d-flex align-items-center">
+            <button type="button" class="btn btn-outline-secondary btn-sm me-3" onclick="window.history.back()">
+                <i class="fas fa-arrow-left me-1"></i> Back
+            </button>
+            <h1 class="mb-0"><i class="fas fa-users-cog me-2"></i>Users</h1>
+        </div>
         <a href="/users/new" class="btn btn-primary"><i class="fas fa-user-plus me-1"></i>Add User</a>
     </div>
 

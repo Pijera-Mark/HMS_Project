@@ -16,12 +16,6 @@
 </head>
 <body>
 
-<div class="global-back-button-container">
-    <button type="button" class="btn btn-outline-secondary btn-sm global-back-button" onclick="window.history.back()">
-        <i class="fas fa-arrow-left me-1"></i> Back
-    </button>
-</div>
-
 <!-- CONTENT -->
 
 <section>
@@ -33,14 +27,6 @@
 <!-- SCRIPTS -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var backButton = document.querySelector('.global-back-button');
-            if (backButton && window.history.length <= 1) {
-                backButton.style.display = 'none';
-            }
-        });
-    </script>
 <!-- -->
 
 </body>
