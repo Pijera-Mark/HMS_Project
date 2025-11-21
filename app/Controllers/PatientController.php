@@ -33,6 +33,19 @@ class PatientController extends BaseController
         ]);
     }
 
+    public function show($id = null)
+    {
+        $patient = $this->patientModel->find($id);
+
+        if (! $patient) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Patient not found');
+        }
+
+        return view('patients/show', [
+            'patient' => $patient,
+        ]);
+    }
+
     public function new()
     {
         return view('patients/new');
