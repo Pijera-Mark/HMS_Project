@@ -39,6 +39,9 @@
                                 <td><?= esc($user['status'] ?? '-') ?></td>
                                 <td><?= esc($user['last_login'] ?? '-') ?></td>
                                 <td>
+                                    <a href="/users/edit/<?= $user['id'] ?>" class="btn btn-sm btn-primary me-1">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
                                     <a href="/users/reset-password/<?= $user['id'] ?>" class="btn btn-sm btn-warning">
                                         <i class="fas fa-key"></i> Reset Password
                                     </a>

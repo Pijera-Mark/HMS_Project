@@ -3,14 +3,17 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Models\BranchModel;
 
 class UserController extends BaseController
 {
     protected UserModel $userModel;
+    protected BranchModel $branchModel;
 
     public function __construct()
     {
-        $this->userModel = new UserModel();
+        $this->userModel  = new UserModel();
+        $this->branchModel = new BranchModel();
     }
 
     public function index()
@@ -85,5 +88,56 @@ class UserController extends BaseController
         }
 
         return redirect()->to('/users')->with('message', 'Password updated successfully for ' . ($user['email'] ?? 'user')); 
+    }
+
+    public function edit($id = null)
+    {
+        $currentUser = session()->get('user');
+
+        if (! $currentUser || ($currentUser['role'] ?? null) !== 'admin') {
+            return redirect()->to('/dashboard');
+        }
+
+        $user = $this->userModel->find($id);
+
+        if (! $user) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('User not found');
+        }
+
+        $branches = $this->branchModel
+            ->orderBy('name', 'ASC')
+            ->findAll();
+
+        return view('users/edit', [
+            'user'     => $user,
+            'branches' => $branches,
+        ]);
+    }
+
+    public function update($id = null)
+    {
+        $currentUser = session()->get('user');
+
+        if (! $currentUser || ($currentUser['role'] ?? null) !== 'admin') {
+            return redirect()->to('/dashboard');
+        }
+
+        $user = $this->userModel->find($id);
+
+        if (! $user) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('User not found');
+        }
+
+        $data = [
+            'role'      => $this->request->getPost('role'),
+            'branch_id' => $this->request->getPost('branch_id') ?: null,
+            'status'    => $this->request->getPost('status'),
+        ];
+
+        if (! $this->userModel->update($id, $data)) {
+            return redirect()->back()->withInput()->with('errors', $this->userModel->errors());
+        }
+
+        return redirect()->to('/users')->with('message', 'User updated successfully.');
     }
 }

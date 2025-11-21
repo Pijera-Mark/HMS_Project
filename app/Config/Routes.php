@@ -25,6 +25,8 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('users', 'UserController::index');
     $routes->get('users/reset-password/(:num)', 'UserController::resetPassword/$1');
     $routes->post('users/reset-password/(:num)', 'UserController::updatePassword/$1');
+    $routes->get('users/edit/(:num)', 'UserController::edit/$1');
+    $routes->post('users/update/(:num)', 'UserController::update/$1');
 
     $routes->get('branches', 'BranchController::index');
     $routes->get('branches/new', 'BranchController::new');
