@@ -42,6 +42,26 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('appointments/confirm/(:num)', 'AppointmentController::confirm/$1');
     $routes->get('appointments/cancel/(:num)', 'AppointmentController::cancel/$1');
     $routes->get('appointments/delete/(:num)', 'AppointmentController::delete/$1');
+
+    $routes->get('admissions', 'AdmissionController::index');
+    $routes->get('admissions/show/(:num)', 'AdmissionController::show/$1');
+    $routes->get('admissions/new', 'AdmissionController::new');
+    $routes->post('admissions/create', 'AdmissionController::create');
+    $routes->post('admissions/discharge/(:num)', 'AdmissionController::discharge/$1');
+
+    $routes->get('medicines', 'MedicineController::index');
+    $routes->get('medicines/new', 'MedicineController::new');
+    $routes->post('medicines/create', 'MedicineController::create');
+    $routes->get('medicines/edit/(:num)', 'MedicineController::edit/$1');
+    $routes->post('medicines/update/(:num)', 'MedicineController::update/$1');
+    $routes->get('medicines/delete/(:num)', 'MedicineController::delete/$1');
+
+    $routes->get('invoices', 'InvoiceController::index');
+    $routes->get('invoices/new', 'InvoiceController::new');
+    $routes->post('invoices/create', 'InvoiceController::create');
+    $routes->get('invoices/show/(:num)', 'InvoiceController::show/$1');
+    $routes->post('invoices/mark-paid/(:num)', 'InvoiceController::markPaid/$1');
+    $routes->get('invoices/delete/(:num)', 'InvoiceController::delete/$1');
 });
 
 // API Routes
