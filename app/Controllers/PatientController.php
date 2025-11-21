@@ -15,6 +15,10 @@ class PatientController extends BaseController
 
     public function index()
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $user = session()->get('user');
         $branchId = $user['branch_id'] ?? null;
         $isGlobal = $user && (empty($branchId) || $user['role'] === 'admin');
@@ -58,11 +62,19 @@ class PatientController extends BaseController
 
     public function new()
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         return view('patients/new');
     }
 
     public function create()
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $data = $this->request->getPost();
 
         $user = session()->get('user');
@@ -79,6 +91,10 @@ class PatientController extends BaseController
 
     public function edit($id = null)
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $patient = $this->patientModel->find($id);
 
         if (! $patient) {
@@ -92,6 +108,10 @@ class PatientController extends BaseController
 
     public function update($id = null)
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $data = $this->request->getPost();
 
         if (! $this->patientModel->update($id, $data)) {
@@ -103,6 +123,10 @@ class PatientController extends BaseController
 
     public function delete($id = null)
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $this->patientModel->delete($id);
 
         return redirect()->to('/patients');

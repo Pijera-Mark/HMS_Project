@@ -34,15 +34,29 @@ class LoginController extends BaseController
             // Update last login
             $this->userModel->update($user['id'], ['last_login' => date('Y-m-d H:i:s')]);
 
-            // Set session
-            session()->set('user', $user);
+            // Regenerate session ID to prevent fixation
+            session()->regenerate(true);
+
+            // Store only non-sensitive fields in session
+            $sessionUser = [
+                'id'        => $user['id'],
+                'name'      => $user['name'] ?? null,
+                'email'     => $user['email'] ?? null,
+                'role'      => $user['role'] ?? null,
+                'branch_id' => $user['branch_id'] ?? null,
+                'status'    => $user['status'] ?? null,
+                'last_login'=> $user['last_login'] ?? null,
+            ];
+
+            session()->set('user', $sessionUser);
 
             // Redirect to dashboard
             return redirect()->to('/dashboard');
-        } else {
-            session()->setFlashdata('error', 'Invalid credentials');
-            return redirect()->back();
         }
+
+        // Generic error to avoid account enumeration
+        session()->setFlashdata('error', 'Invalid credentials');
+        return redirect()->back();
     }
 
     public function logout()

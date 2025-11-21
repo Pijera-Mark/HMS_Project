@@ -104,7 +104,11 @@ class DashboardController extends BaseController
         $totalRevenue  = $totalRevenueRow['total_amount'] ?? 0;
         $pendingAmount = $pendingAmountRow['total_amount'] ?? 0;
 
-        return view('dashboard/admin', [
+        $view = ($user['role'] ?? null) === 'admin'
+            ? 'dashboard/admin'
+            : 'dashboard/user';
+
+        return view($view, [
             'user'                => $user,
             'stats'               => [
                 'total_patients'      => $totalPatients,

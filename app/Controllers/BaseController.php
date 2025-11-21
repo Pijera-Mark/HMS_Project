@@ -55,4 +55,16 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = service('session');
     }
+
+    protected function enforceRoles(array $roles)
+    {
+        $user = session()->get('user');
+        $role = $user['role'] ?? null;
+
+        if (! $user || ! in_array($role, $roles, true)) {
+            return redirect()->to('/dashboard');
+        }
+
+        return null;
+    }
 }

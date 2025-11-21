@@ -6,7 +6,7 @@
 		<div class="header-content">
 			<h1 class="dashboard-title">
 				<i class="fas fa-user-shield"></i>
-				Admin Dashboard
+				<?= (($user['role'] ?? null) === 'admin') ? 'Admin Dashboard' : 'Dashboard' ?>
 			</h1>
 			<div class="user-info">
 				<div class="user-avatar">
@@ -73,6 +73,65 @@
 	</div>
 
 	<div class="dashboard-grid">
+		<div class="dashboard-sidebar">
+			<div class="dashboard-card">
+				<div class="card-header">
+					<h3 class="card-title">
+						<i class="fas fa-bolt"></i>
+						Quick Actions
+					</h3>
+				</div>
+				<div class="card-content">
+					<div class="action-grid">
+						<a href="/patients" class="action-item">
+							<div class="action-icon">
+								<i class="fas fa-user-injured"></i>
+							</div>
+							<span class="action-label">Manage Patients</span>
+						</a>
+						<a href="/appointments" class="action-item">
+							<div class="action-icon">
+								<i class="fas fa-calendar-check"></i>
+							</div>
+							<span class="action-label">Appointments</span>
+						</a>
+						<a href="/admissions" class="action-item">
+							<div class="action-icon">
+								<i class="fas fa-hospital-user"></i>
+							</div>
+							<span class="action-label">Admissions</span>
+						</a>
+						<a href="/invoices" class="action-item">
+							<div class="action-icon">
+								<i class="fas fa-file-invoice-dollar"></i>
+							</div>
+							<span class="action-label">Billing &amp; Invoices</span>
+						</a>
+						<a href="/medicines" class="action-item">
+							<div class="action-icon">
+								<i class="fas fa-pills"></i>
+							</div>
+							<span class="action-label">Medicine Inventory</span>
+						</a>
+						<?php if (($user['role'] ?? null) === 'admin'): ?>
+							<a href="/users" class="action-item">
+								<div class="action-icon">
+									<i class="fas fa-users-cog"></i>
+								</div>
+								<span class="action-label">Manage Users</span>
+							</a>
+							<a href="/branches" class="action-item">
+								<div class="action-icon">
+									<i class="fas fa-code-branch"></i>
+								</div>
+								<span class="action-label">Manage Branches</span>
+							</a>
+						<?php endif; ?>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="dashboard-main">
 			<div class="dashboard-card">
 				<div class="card-header">
@@ -190,66 +249,6 @@
 				</div>
 			</div>
 
-			<div class="dashboard-card">
-				<div class="card-header">
-					<h3 class="card-title">
-						<i class="fas fa-bolt"></i>
-						Quick Actions
-					</h3>
-				</div>
-				<div class="card-content">
-					<div class="action-grid">
-						<a href="/patients" class="action-item">
-							<div class="action-icon">
-								<i class="fas fa-user-injured"></i>
-							</div>
-							<span class="action-label">Manage Patients</span>
-						</a>
-						<a href="/users" class="action-item">
-							<div class="action-icon">
-								<i class="fas fa-users-cog"></i>
-							</div>
-							<span class="action-label">Manage Users</span>
-						</a>
-						<a href="/branches" class="action-item">
-							<div class="action-icon">
-								<i class="fas fa-code-branch"></i>
-							</div>
-							<span class="action-label">Manage Branches</span>
-						</a>
-						<a href="/doctors" class="action-item">
-							<div class="action-icon">
-								<i class="fas fa-user-md"></i>
-							</div>
-							<span class="action-label">Manage Doctors</span>
-						</a>
-						<a href="/appointments" class="action-item">
-							<div class="action-icon">
-								<i class="fas fa-calendar-check"></i>
-							</div>
-							<span class="action-label">Appointments</span>
-						</a>
-						<a href="/admissions" class="action-item">
-							<div class="action-icon">
-								<i class="fas fa-hospital-user"></i>
-							</div>
-							<span class="action-label">Admissions</span>
-						</a>
-						<a href="/invoices" class="action-item">
-							<div class="action-icon">
-								<i class="fas fa-file-invoice-dollar"></i>
-							</div>
-							<span class="action-label">Billing &amp; Invoices</span>
-						</a>
-						<a href="/medicines" class="action-item">
-							<div class="action-icon">
-								<i class="fas fa-pills"></i>
-							</div>
-							<span class="action-label">Medicine Inventory</span>
-						</a>
-					</div>
-				</div>
-			</div>
 		</div>
 	</div>
 </div>
@@ -404,7 +403,7 @@
 
 .dashboard-grid {
 	display: grid;
-	grid-template-columns: 2fr 1fr;
+	grid-template-columns: 260px 2fr 1.2fr;
 	gap: 20px;
 }
 
@@ -587,8 +586,8 @@
 }
 
 .action-grid {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
+	display: flex;
+	flex-direction: column;
 	gap: 12px;
 }
 

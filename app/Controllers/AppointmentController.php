@@ -21,6 +21,10 @@ class AppointmentController extends BaseController
 
     public function index()
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $user = session()->get('user');
         $branchId = $user['branch_id'] ?? null;
         $isGlobal = $user && (empty($branchId) || $user['role'] === 'admin');
@@ -60,6 +64,10 @@ class AppointmentController extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Appointment not found');
         }
 
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $user = session()->get('user');
         $branchId = $user['branch_id'] ?? null;
         $isGlobal = $user && (empty($branchId) || $user['role'] === 'admin');
@@ -88,6 +96,10 @@ class AppointmentController extends BaseController
 
     public function new()
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $user = session()->get('user');
         $branchId = $user['branch_id'] ?? null;
         $isGlobal = $user && (empty($branchId) || $user['role'] === 'admin');
@@ -112,6 +124,10 @@ class AppointmentController extends BaseController
 
     public function create()
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $data = $this->request->getPost();
 
         $user = session()->get('user');
@@ -140,6 +156,10 @@ class AppointmentController extends BaseController
 
     public function confirm($id = null)
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $this->appointmentModel->update($id, ['status' => 'confirmed']);
 
         return redirect()->to('/appointments');
@@ -147,6 +167,10 @@ class AppointmentController extends BaseController
 
     public function cancel($id = null)
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $this->appointmentModel->update($id, ['status' => 'cancelled']);
 
         return redirect()->to('/appointments');
@@ -154,6 +178,10 @@ class AppointmentController extends BaseController
 
     public function delete($id = null)
     {
+        if ($redirect = $this->enforceRoles(['admin', 'doctor', 'nurse', 'receptionist'])) {
+            return $redirect;
+        }
+
         $this->appointmentModel->delete($id);
 
         return redirect()->to('/appointments');

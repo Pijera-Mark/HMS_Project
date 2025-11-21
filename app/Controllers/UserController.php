@@ -18,10 +18,8 @@ class UserController extends BaseController
 
     public function index()
     {
-        $currentUser = session()->get('user');
-
-        if (! $currentUser || ($currentUser['role'] ?? null) !== 'admin') {
-            return redirect()->to('/dashboard');
+        if ($redirect = $this->enforceRoles(['admin'])) {
+            return $redirect;
         }
 
         $users = $this->userModel
@@ -35,10 +33,8 @@ class UserController extends BaseController
 
     public function resetPassword($id = null)
     {
-        $currentUser = session()->get('user');
-
-        if (! $currentUser || ($currentUser['role'] ?? null) !== 'admin') {
-            return redirect()->to('/dashboard');
+        if ($redirect = $this->enforceRoles(['admin'])) {
+            return $redirect;
         }
 
         $user = $this->userModel->find($id);
@@ -54,10 +50,8 @@ class UserController extends BaseController
 
     public function updatePassword($id = null)
     {
-        $currentUser = session()->get('user');
-
-        if (! $currentUser || ($currentUser['role'] ?? null) !== 'admin') {
-            return redirect()->to('/dashboard');
+        if ($redirect = $this->enforceRoles(['admin'])) {
+            return $redirect;
         }
 
         $user = $this->userModel->find($id);
@@ -92,10 +86,8 @@ class UserController extends BaseController
 
     public function edit($id = null)
     {
-        $currentUser = session()->get('user');
-
-        if (! $currentUser || ($currentUser['role'] ?? null) !== 'admin') {
-            return redirect()->to('/dashboard');
+        if ($redirect = $this->enforceRoles(['admin'])) {
+            return $redirect;
         }
 
         $user = $this->userModel->find($id);
@@ -116,10 +108,8 @@ class UserController extends BaseController
 
     public function update($id = null)
     {
-        $currentUser = session()->get('user');
-
-        if (! $currentUser || ($currentUser['role'] ?? null) !== 'admin') {
-            return redirect()->to('/dashboard');
+        if ($redirect = $this->enforceRoles(['admin'])) {
+            return $redirect;
         }
 
         $user = $this->userModel->find($id);

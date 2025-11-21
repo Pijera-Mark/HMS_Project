@@ -15,6 +15,10 @@ class BranchController extends BaseController
 
     public function index()
     {
+        if ($redirect = $this->enforceRoles(['admin'])) {
+            return $redirect;
+        }
+
         $branches = $this->branchModel->findAll();
 
         return view('branches/index', [
@@ -24,11 +28,19 @@ class BranchController extends BaseController
 
     public function new()
     {
+        if ($redirect = $this->enforceRoles(['admin'])) {
+            return $redirect;
+        }
+
         return view('branches/new');
     }
 
     public function create()
     {
+        if ($redirect = $this->enforceRoles(['admin'])) {
+            return $redirect;
+        }
+
         $data = $this->request->getPost();
 
         if (! $this->branchModel->save($data)) {
@@ -40,6 +52,10 @@ class BranchController extends BaseController
 
     public function edit($id = null)
     {
+        if ($redirect = $this->enforceRoles(['admin'])) {
+            return $redirect;
+        }
+
         $branch = $this->branchModel->find($id);
 
         if (! $branch) {
@@ -53,6 +69,10 @@ class BranchController extends BaseController
 
     public function update($id = null)
     {
+        if ($redirect = $this->enforceRoles(['admin'])) {
+            return $redirect;
+        }
+
         $data = $this->request->getPost();
 
         if (! $this->branchModel->update($id, $data)) {
@@ -64,6 +84,10 @@ class BranchController extends BaseController
 
     public function delete($id = null)
     {
+        if ($redirect = $this->enforceRoles(['admin'])) {
+            return $redirect;
+        }
+
         $this->branchModel->delete($id);
 
         return redirect()->to('/branches');
