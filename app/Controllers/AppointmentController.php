@@ -21,6 +21,10 @@ class AppointmentController extends BaseController
 
     public function index()
     {
+        $user = session()->get('user');
+        $branchId = $user['branch_id'] ?? null;
+        $isGlobal = $user && (empty($branchId) || $user['role'] === 'admin');
+
         $date   = $this->request->getGet('date');
         $status = $this->request->getGet('status');
 
@@ -28,6 +32,10 @@ class AppointmentController extends BaseController
         $builder->select('appointments.*, patients.first_name AS patient_first_name, patients.last_name AS patient_last_name, doctors.first_name AS doctor_first_name, doctors.last_name AS doctor_last_name');
         $builder->join('patients', 'patients.patient_id = appointments.patient_id', 'left');
         $builder->join('doctors', 'doctors.doctor_id = appointments.doctor_id', 'left');
+
+        if (! $isGlobal && $branchId) {
+            $builder->where('appointments.branch_id', $branchId);
+        }
 
         if ($date) {
             $builder->where('DATE(appointments.scheduled_at)', $date);
@@ -52,12 +60,19 @@ class AppointmentController extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Appointment not found');
         }
 
+        $user = session()->get('user');
+        $branchId = $user['branch_id'] ?? null;
+        $isGlobal = $user && (empty($branchId) || $user['role'] === 'admin');
+
         $builder = $this->appointmentModel->builder();
         $builder->select('appointments.*, '
             . 'patients.first_name AS patient_first_name, patients.last_name AS patient_last_name, '
             . 'doctors.first_name AS doctor_first_name, doctors.last_name AS doctor_last_name');
         $builder->join('patients', 'patients.patient_id = appointments.patient_id', 'left');
         $builder->join('doctors', 'doctors.doctor_id = appointments.doctor_id', 'left');
+        if (! $isGlobal && $branchId) {
+            $builder->where('appointments.branch_id', $branchId);
+        }
         $builder->where('appointments.id', $id);
 
         $appointment = $builder->get()->getRowArray();
@@ -73,8 +88,21 @@ class AppointmentController extends BaseController
 
     public function new()
     {
-        $patients = $this->patientModel->orderBy('first_name')->findAll();
-        $doctors  = $this->doctorModel->orderBy('first_name')->findAll();
+        $user = session()->get('user');
+        $branchId = $user['branch_id'] ?? null;
+        $isGlobal = $user && (empty($branchId) || $user['role'] === 'admin');
+
+        $patientBuilder = $this->patientModel->orderBy('first_name');
+        if (! $isGlobal && $branchId) {
+            $patientBuilder = $patientBuilder->where('branch_id', $branchId);
+        }
+        $patients = $patientBuilder->findAll();
+
+        $doctorBuilder = $this->doctorModel->orderBy('first_name');
+        if (! $isGlobal && $branchId) {
+            $doctorBuilder = $doctorBuilder->where('branch_id', $branchId);
+        }
+        $doctors  = $doctorBuilder->findAll();
 
         return view('appointments/new', [
             'patients' => $patients,
@@ -85,6 +113,11 @@ class AppointmentController extends BaseController
     public function create()
     {
         $data = $this->request->getPost();
+
+        $user = session()->get('user');
+        if ($user && isset($user['branch_id']) && $user['branch_id']) {
+            $data['branch_id'] = $user['branch_id'];
+        }
 
         if (! empty($data['scheduled_at'])) {
             $data['scheduled_at'] = date('Y-m-d H:i:s', strtotime($data['scheduled_at']));

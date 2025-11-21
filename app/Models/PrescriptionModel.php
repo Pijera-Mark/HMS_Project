@@ -22,7 +22,8 @@ class PrescriptionModel extends Model
         'duration',
         'quantity',
         'instructions',
-        'status'
+        'status',
+        'branch_id'
     ];
 
     protected $useTimestamps = true;
@@ -44,21 +45,33 @@ class PrescriptionModel extends Model
     /**
      * Get prescriptions by patient
      */
-    public function getPatientPrescriptions($patientId)
+    public function getPatientPrescriptions($patientId, $branchId = null)
     {
-        return $this->where('patient_id', $patientId)
-                    ->orderBy('created_at', 'DESC')
-                    ->findAll();
+        $builder = $this->where('patient_id', $patientId);
+
+        if ($branchId) {
+            $builder = $builder->where('branch_id', $branchId);
+        }
+
+        return $builder
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
     }
 
     /**
      * Get active prescriptions
      */
-    public function getActivePrescriptions()
+    public function getActivePrescriptions($branchId = null)
     {
-        return $this->where('status', 'active')
-                    ->orderBy('created_at', 'DESC')
-                    ->findAll();
+        $builder = $this->where('status', 'active');
+
+        if ($branchId) {
+            $builder = $builder->where('branch_id', $branchId);
+        }
+
+        return $builder
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
     }
 
     /**

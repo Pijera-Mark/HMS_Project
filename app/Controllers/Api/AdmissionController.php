@@ -22,6 +22,7 @@ class AdmissionController extends BaseController
     {
         $status = $this->request->getGet('status');
         $patientId = $this->request->getGet('patient_id');
+        $branchId = $this->request->getGet('branch_id');
 
         $builder = $this->admissionModel->builder();
 
@@ -30,6 +31,9 @@ class AdmissionController extends BaseController
         }
         if ($patientId) {
             $builder->where('patient_id', $patientId);
+        }
+        if ($branchId) {
+            $builder->where('branch_id', $branchId);
         }
 
         $admissions = $builder->get()->getResultArray();
@@ -45,7 +49,9 @@ class AdmissionController extends BaseController
      */
     public function active()
     {
-        $admissions = $this->admissionModel->getActiveAdmissions();
+        $branchId = $this->request->getGet('branch_id');
+
+        $admissions = $this->admissionModel->getActiveAdmissions($branchId);
 
         return $this->response->setJSON([
             'status' => 'success',
@@ -59,6 +65,9 @@ class AdmissionController extends BaseController
     public function create()
     {
         $data = $this->request->getJSON(true);
+
+        // Allow client to pass branch_id to associate admission with a branch
+        // If not provided, branch_id will remain null (global or unspecified).
 
         // Set default status
         if (!isset($data['status'])) {

@@ -22,6 +22,7 @@ class MedicalRecordController extends BaseController
     {
         $patientId = $this->request->getGet('patient_id');
         $doctorId = $this->request->getGet('doctor_id');
+        $branchId = $this->request->getGet('branch_id');
 
         $builder = $this->medicalRecordModel->builder();
 
@@ -30,6 +31,10 @@ class MedicalRecordController extends BaseController
         }
         if ($doctorId) {
             $builder->where('doctor_id', $doctorId);
+        }
+
+        if ($branchId) {
+            $builder->where('branch_id', $branchId);
         }
 
         $records = $builder->orderBy('visit_date', 'DESC')->get()->getResultArray();
@@ -52,7 +57,9 @@ class MedicalRecordController extends BaseController
             ]);
         }
 
-        $records = $this->medicalRecordModel->getPatientRecords($patientId);
+        $branchId = $this->request->getGet('branch_id');
+
+        $records = $this->medicalRecordModel->getPatientRecords($patientId, $branchId);
 
         return $this->response->setJSON([
             'status' => 'success',
@@ -86,6 +93,9 @@ class MedicalRecordController extends BaseController
     public function create()
     {
         $data = $this->request->getJSON(true);
+
+        // Allow client to pass branch_id to associate medical record with a branch
+        // If not provided, branch_id will remain null (global or unspecified).
 
         if ($this->medicalRecordModel->insert($data)) {
             return $this->response->setStatusCode(201)->setJSON([

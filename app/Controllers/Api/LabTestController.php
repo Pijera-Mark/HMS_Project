@@ -23,6 +23,7 @@ class LabTestController extends BaseController
         $patientId = $this->request->getGet('patient_id');
         $doctorId = $this->request->getGet('doctor_id');
         $status = $this->request->getGet('status');
+        $branchId = $this->request->getGet('branch_id');
 
         $builder = $this->labTestModel->builder();
 
@@ -34,6 +35,9 @@ class LabTestController extends BaseController
         }
         if ($status) {
             $builder->where('status', $status);
+        }
+        if ($branchId) {
+            $builder->where('branch_id', $branchId);
         }
 
         $tests = $builder->orderBy('test_date', 'DESC')->get()->getResultArray();
@@ -49,7 +53,9 @@ class LabTestController extends BaseController
      */
     public function pending()
     {
-        $tests = $this->labTestModel->getPendingTests();
+        $branchId = $this->request->getGet('branch_id');
+
+        $tests = $this->labTestModel->getPendingTests($branchId);
 
         return $this->response->setJSON([
             'status' => 'success',
@@ -62,7 +68,9 @@ class LabTestController extends BaseController
      */
     public function completed()
     {
-        $tests = $this->labTestModel->getCompletedTests();
+        $branchId = $this->request->getGet('branch_id');
+
+        $tests = $this->labTestModel->getCompletedTests($branchId);
 
         return $this->response->setJSON([
             'status' => 'success',
@@ -82,7 +90,9 @@ class LabTestController extends BaseController
             ]);
         }
 
-        $tests = $this->labTestModel->getPatientTests($patientId);
+        $branchId = $this->request->getGet('branch_id');
+
+        $tests = $this->labTestModel->getPatientTests($patientId, $branchId);
 
         return $this->response->setJSON([
             'status' => 'success',
@@ -116,6 +126,9 @@ class LabTestController extends BaseController
     public function create()
     {
         $data = $this->request->getJSON(true);
+
+        // Allow client to pass branch_id to associate lab test with a branch
+        // If not provided, branch_id will remain null (global or unspecified).
 
         if ($this->labTestModel->insert($data)) {
             return $this->response->setStatusCode(201)->setJSON([

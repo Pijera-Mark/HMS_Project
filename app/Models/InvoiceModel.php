@@ -18,7 +18,8 @@ class InvoiceModel extends Model
         'admission_id',
         'created_by',
         'total_amount',
-        'status'
+        'status',
+        'branch_id'
     ];
 
     protected $useTimestamps = true;
@@ -49,8 +50,14 @@ class InvoiceModel extends Model
     /**
      * Get unpaid invoices
      */
-    public function getUnpaidInvoices()
+    public function getUnpaidInvoices($branchId = null)
     {
-        return $this->whereIn('status', ['unpaid', 'partially_paid'])->findAll();
+        $builder = $this->whereIn('status', ['unpaid', 'partially_paid']);
+
+        if ($branchId) {
+            $builder = $builder->where('branch_id', $branchId);
+        }
+
+        return $builder->findAll();
     }
 }

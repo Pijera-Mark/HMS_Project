@@ -25,7 +25,8 @@ class DoctorModel extends Model
         'consultation_fee',
         'available_days',
         'available_hours',
-        'status'
+        'status',
+        'branch_id'
     ];
 
     // Dates

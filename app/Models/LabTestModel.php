@@ -22,7 +22,8 @@ class LabTestModel extends Model
         'result_date',
         'status',
         'notes',
-        'cost'
+        'cost',
+        'branch_id'
     ];
 
     protected $useTimestamps = true;
@@ -43,31 +44,49 @@ class LabTestModel extends Model
     /**
      * Get lab tests by patient
      */
-    public function getPatientTests($patientId)
+    public function getPatientTests($patientId, $branchId = null)
     {
-        return $this->where('patient_id', $patientId)
-                    ->orderBy('test_date', 'DESC')
-                    ->findAll();
+        $builder = $this->where('patient_id', $patientId);
+
+        if ($branchId) {
+            $builder = $builder->where('branch_id', $branchId);
+        }
+
+        return $builder
+            ->orderBy('test_date', 'DESC')
+            ->findAll();
     }
 
     /**
      * Get pending lab tests
      */
-    public function getPendingTests()
+    public function getPendingTests($branchId = null)
     {
-        return $this->where('status', 'pending')
-                    ->orderBy('test_date', 'ASC')
-                    ->findAll();
+        $builder = $this->where('status', 'pending');
+
+        if ($branchId) {
+            $builder = $builder->where('branch_id', $branchId);
+        }
+
+        return $builder
+            ->orderBy('test_date', 'ASC')
+            ->findAll();
     }
 
     /**
      * Get completed lab tests
      */
-    public function getCompletedTests()
+    public function getCompletedTests($branchId = null)
     {
-        return $this->where('status', 'completed')
-                    ->orderBy('result_date', 'DESC')
-                    ->findAll();
+        $builder = $this->where('status', 'completed');
+
+        if ($branchId) {
+            $builder = $builder->where('branch_id', $branchId);
+        }
+
+        return $builder
+            ->orderBy('result_date', 'DESC')
+            ->findAll();
     }
 
     /**

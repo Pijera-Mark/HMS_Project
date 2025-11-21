@@ -23,20 +23,30 @@ class MedicineController extends BaseController
         $search = $this->request->getGet('search');
         $lowStock = $this->request->getGet('low_stock');
         $expiring = $this->request->getGet('expiring');
+        $branchId = $this->request->getGet('branch_id');
 
         if ($lowStock) {
-            $medicines = $this->medicineModel->getLowStockMedicines();
+            $medicines = $this->medicineModel->getLowStockMedicines($branchId);
         } elseif ($expiring) {
             $days = $this->request->getGet('days') ?? 30;
-            $medicines = $this->medicineModel->getExpiringMedicines($days);
+            $medicines = $this->medicineModel->getExpiringMedicines($days, $branchId);
         } elseif ($search) {
-            $medicines = $this->medicineModel
+            $builder = $this->medicineModel
                 ->like('name', $search)
                 ->orLike('sku', $search)
-                ->orLike('batch_number', $search)
-                ->findAll();
+                ->orLike('batch_number', $search);
+
+            if ($branchId) {
+                $builder = $builder->where('branch_id', $branchId);
+            }
+
+            $medicines = $builder->findAll();
         } else {
-            $medicines = $this->medicineModel->findAll();
+            if ($branchId) {
+                $medicines = $this->medicineModel->where('branch_id', $branchId)->findAll();
+            } else {
+                $medicines = $this->medicineModel->findAll();
+            }
         }
 
         return $this->response->setJSON([
@@ -71,6 +81,9 @@ class MedicineController extends BaseController
     public function create()
     {
         $data = $this->request->getJSON(true);
+
+        // Allow client to pass branch_id to associate medicine with a branch
+        // If not provided, branch_id will remain null (global or unspecified).
 
         if ($this->medicineModel->insert($data)) {
             return $this->response->setStatusCode(201)->setJSON([
@@ -189,8 +202,10 @@ class MedicineController extends BaseController
      */
     public function alerts()
     {
-        $lowStock = $this->medicineModel->getLowStockMedicines();
-        $expiring = $this->medicineModel->getExpiringMedicines(30);
+        $branchId = $this->request->getGet('branch_id');
+
+        $lowStock = $this->medicineModel->getLowStockMedicines($branchId);
+        $expiring = $this->medicineModel->getExpiringMedicines(30, $branchId);
 
         return $this->response->setJSON([
             'status' => 'success',

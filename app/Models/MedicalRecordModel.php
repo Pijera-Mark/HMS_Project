@@ -23,7 +23,8 @@ class MedicalRecordModel extends Model
         'treatment',
         'prescription',
         'notes',
-        'follow_up_date'
+        'follow_up_date',
+        'branch_id'
     ];
 
     protected $useTimestamps = true;
@@ -43,11 +44,17 @@ class MedicalRecordModel extends Model
     /**
      * Get medical records by patient
      */
-    public function getPatientRecords($patientId)
+    public function getPatientRecords($patientId, $branchId = null)
     {
-        return $this->where('patient_id', $patientId)
-                    ->orderBy('visit_date', 'DESC')
-                    ->findAll();
+        $builder = $this->where('patient_id', $patientId);
+
+        if ($branchId) {
+            $builder = $builder->where('branch_id', $branchId);
+        }
+
+        return $builder
+            ->orderBy('visit_date', 'DESC')
+            ->findAll();
     }
 
     /**

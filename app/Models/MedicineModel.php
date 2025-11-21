@@ -21,7 +21,8 @@ class MedicineModel extends Model
         'purchase_price',
         'sale_price',
         'stock_quantity',
-        'min_stock_threshold'
+        'min_stock_threshold',
+        'branch_id'
     ];
 
     protected $useTimestamps = true;
@@ -43,17 +44,30 @@ class MedicineModel extends Model
     /**
      * Get medicines with low stock
      */
-    public function getLowStockMedicines()
+    public function getLowStockMedicines($branchId = null)
     {
-        return $this->where('stock_quantity <=', 'min_stock_threshold', false)->findAll();
+        $builder = $this->where('stock_quantity <=', 'min_stock_threshold', false);
+
+        if ($branchId) {
+            $builder = $builder->where('branch_id', $branchId);
+        }
+
+        return $builder->findAll();
     }
 
     /**
      * Get expired or expiring soon medicines
      */
-    public function getExpiringMedicines($days = 30)
+    public function getExpiringMedicines($days = 30, $branchId = null)
     {
         $date = date('Y-m-d', strtotime("+{$days} days"));
-        return $this->where('expiry_date <=', $date)->findAll();
+
+        $builder = $this->where('expiry_date <=', $date);
+
+        if ($branchId) {
+            $builder = $builder->where('branch_id', $branchId);
+        }
+
+        return $builder->findAll();
     }
 }

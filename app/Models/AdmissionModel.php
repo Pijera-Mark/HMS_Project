@@ -22,7 +22,8 @@ class AdmissionModel extends Model
         'admission_date',
         'discharge_date',
         'status',
-        'notes'
+        'notes',
+        'branch_id'
     ];
 
     protected $useTimestamps = true;
@@ -44,9 +45,15 @@ class AdmissionModel extends Model
     /**
      * Get active admissions
      */
-    public function getActiveAdmissions()
+    public function getActiveAdmissions($branchId = null)
     {
-        return $this->where('status', 'admitted')->findAll();
+        $builder = $this->where('status', 'admitted');
+
+        if ($branchId) {
+            $builder = $builder->where('branch_id', $branchId);
+        }
+
+        return $builder->findAll();
     }
 
     /**

@@ -19,6 +19,9 @@ class DashboardController extends BaseController
             return redirect()->to('/login');
         }
 
+        $branchId = $user['branch_id'] ?? null;
+        $isGlobal = $user && (empty($branchId) || $user['role'] === 'admin');
+
         $patientModel     = new PatientModel();
         $doctorModel      = new DoctorModel();
         $appointmentModel = new AppointmentModel();
@@ -26,38 +29,77 @@ class DashboardController extends BaseController
         $medicineModel    = new MedicineModel();
         $invoiceModel     = new InvoiceModel();
 
-        $totalPatients     = $patientModel->countAll();
-        $totalDoctors      = $doctorModel->countAll();
-        $totalAppointments = $appointmentModel->countAll();
-        $todayAppointments = $appointmentModel
-            ->where('DATE(scheduled_at)', date('Y-m-d'))
-            ->countAllResults();
-        $activeAdmissions  = $admissionModel
-            ->where('status', 'admitted')
-            ->countAllResults();
+        if ($isGlobal || ! $branchId) {
+            $totalPatients = $patientModel->countAll();
+        } else {
+            $totalPatients = $patientModel->where('branch_id', $branchId)->countAllResults();
+        }
 
-        $lowStockList    = $medicineModel->getLowStockMedicines();
-        $expiringList    = $medicineModel->getExpiringMedicines(30);
-        $unpaidInvoiceList = $invoiceModel->getUnpaidInvoices();
+        if ($isGlobal || ! $branchId) {
+            $totalDoctors = $doctorModel->countAll();
+        } else {
+            $totalDoctors = $doctorModel->where('branch_id', $branchId)->countAllResults();
+        }
+
+        if ($isGlobal || ! $branchId) {
+            $totalAppointments = $appointmentModel->countAll();
+            $todayAppointments = $appointmentModel
+                ->where('DATE(scheduled_at)', date('Y-m-d'))
+                ->countAllResults();
+            $activeAdmissions  = $admissionModel
+                ->where('status', 'admitted')
+                ->countAllResults();
+        } else {
+            $totalAppointments = $appointmentModel
+                ->where('branch_id', $branchId)
+                ->countAllResults();
+            $todayAppointments = $appointmentModel
+                ->where('branch_id', $branchId)
+                ->where('DATE(scheduled_at)', date('Y-m-d'))
+                ->countAllResults();
+            $activeAdmissions  = $admissionModel
+                ->where('branch_id', $branchId)
+                ->where('status', 'admitted')
+                ->countAllResults();
+        }
+
+        $branchFilterId = $isGlobal ? null : $branchId;
+
+        $lowStockList      = $medicineModel->getLowStockMedicines($branchFilterId);
+        $expiringList      = $medicineModel->getExpiringMedicines(30, $branchFilterId);
+        $unpaidInvoiceList = $invoiceModel->getUnpaidInvoices($branchFilterId);
 
         $lowStockMedicines   = is_array($lowStockList) ? count($lowStockList) : 0;
         $expiringMedicines   = is_array($expiringList) ? count($expiringList) : 0;
         $unpaidInvoices      = is_array($unpaidInvoiceList) ? count($unpaidInvoiceList) : 0;
 
-        $recentAppointments = $appointmentModel
-            ->where('scheduled_at >=', date('Y-m-d', strtotime('-7 days')))
+        $recentAppointmentsQuery = $appointmentModel
+            ->where('scheduled_at >=', date('Y-m-d', strtotime('-7 days')));
+
+        if (! $isGlobal && $branchId) {
+            $recentAppointmentsQuery = $recentAppointmentsQuery->where('branch_id', $branchId);
+        }
+
+        $recentAppointments = $recentAppointmentsQuery
             ->orderBy('scheduled_at', 'DESC')
             ->limit(5)
             ->find();
 
-        $totalRevenueRow = $invoiceModel
+        $totalRevenueBuilder = $invoiceModel
             ->selectSum('total_amount')
-            ->where('status', 'paid')
-            ->first();
-        $pendingAmountRow = $invoiceModel
+            ->where('status', 'paid');
+        if (! $isGlobal && $branchId) {
+            $totalRevenueBuilder = $totalRevenueBuilder->where('branch_id', $branchId);
+        }
+        $totalRevenueRow = $totalRevenueBuilder->first();
+
+        $pendingAmountBuilder = $invoiceModel
             ->selectSum('total_amount')
-            ->whereIn('status', ['unpaid', 'partially_paid'])
-            ->first();
+            ->whereIn('status', ['unpaid', 'partially_paid']);
+        if (! $isGlobal && $branchId) {
+            $pendingAmountBuilder = $pendingAmountBuilder->where('branch_id', $branchId);
+        }
+        $pendingAmountRow = $pendingAmountBuilder->first();
 
         $totalRevenue  = $totalRevenueRow['total_amount'] ?? 0;
         $pendingAmount = $pendingAmountRow['total_amount'] ?? 0;

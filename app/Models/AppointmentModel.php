@@ -19,7 +19,8 @@ class AppointmentModel extends Model
         'duration_minutes',
         'status',
         'reason',
-        'notes'
+        'notes',
+        'branch_id'
     ];
 
     protected $useTimestamps = true;

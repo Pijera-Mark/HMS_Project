@@ -22,6 +22,7 @@ class InvoiceController extends BaseController
     {
         $status = $this->request->getGet('status');
         $patientId = $this->request->getGet('patient_id');
+        $branchId = $this->request->getGet('branch_id');
 
         $builder = $this->invoiceModel->builder();
 
@@ -30,6 +31,9 @@ class InvoiceController extends BaseController
         }
         if ($patientId) {
             $builder->where('patient_id', $patientId);
+        }
+        if ($branchId) {
+            $builder->where('branch_id', $branchId);
         }
 
         $invoices = $builder->get()->getResultArray();
@@ -45,7 +49,9 @@ class InvoiceController extends BaseController
      */
     public function unpaid()
     {
-        $invoices = $this->invoiceModel->getUnpaidInvoices();
+        $branchId = $this->request->getGet('branch_id');
+
+        $invoices = $this->invoiceModel->getUnpaidInvoices($branchId);
 
         return $this->response->setJSON([
             'status' => 'success',
@@ -79,6 +85,9 @@ class InvoiceController extends BaseController
     public function create()
     {
         $data = $this->request->getJSON(true);
+
+        // Allow client to pass branch_id to associate invoice with a branch
+        // If not provided, branch_id will remain null (global or unspecified).
 
         // Generate invoice number if not provided
         if (!isset($data['invoice_number'])) {

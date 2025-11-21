@@ -23,6 +23,7 @@ class PrescriptionController extends BaseController
         $patientId = $this->request->getGet('patient_id');
         $doctorId = $this->request->getGet('doctor_id');
         $status = $this->request->getGet('status');
+        $branchId = $this->request->getGet('branch_id');
 
         $builder = $this->prescriptionModel->builder();
 
@@ -34,6 +35,10 @@ class PrescriptionController extends BaseController
         }
         if ($status) {
             $builder->where('status', $status);
+        }
+
+        if ($branchId) {
+            $builder->where('branch_id', $branchId);
         }
 
         $prescriptions = $builder->orderBy('created_at', 'DESC')->get()->getResultArray();
@@ -49,7 +54,9 @@ class PrescriptionController extends BaseController
      */
     public function active()
     {
-        $prescriptions = $this->prescriptionModel->getActivePrescriptions();
+        $branchId = $this->request->getGet('branch_id');
+
+        $prescriptions = $this->prescriptionModel->getActivePrescriptions($branchId);
 
         return $this->response->setJSON([
             'status' => 'success',
@@ -69,7 +76,9 @@ class PrescriptionController extends BaseController
             ]);
         }
 
-        $prescriptions = $this->prescriptionModel->getPatientPrescriptions($patientId);
+        $branchId = $this->request->getGet('branch_id');
+
+        $prescriptions = $this->prescriptionModel->getPatientPrescriptions($patientId, $branchId);
 
         return $this->response->setJSON([
             'status' => 'success',
@@ -103,6 +112,9 @@ class PrescriptionController extends BaseController
     public function create()
     {
         $data = $this->request->getJSON(true);
+
+        // Allow client to pass branch_id to associate prescription with a branch
+        // If not provided, branch_id will remain null (global or unspecified).
 
         if ($this->prescriptionModel->insert($data)) {
             return $this->response->setStatusCode(201)->setJSON([
