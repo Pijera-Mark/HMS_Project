@@ -9,7 +9,18 @@
 
     <div class="card">
         <div class="card-body">
+            <?php if (session()->has('errors')): ?>
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        <?php foreach (session('errors') as $error): ?>
+                            <li><?= esc($error) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
             <form action="/patients/create" method="post">
+                <?= csrf_field() ?>
                 <!-- Personal Information -->
                 <div class="accordion" id="patientFormAccordion">
                     <div class="accordion-item">
