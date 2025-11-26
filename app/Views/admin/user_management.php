@@ -95,9 +95,10 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stats-card" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);">
-                    <h3><?= count($stats['by_role']) ?></h3>
+                <div class="stats-card" style="background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);">
+                    <h3><?= array_sum(array_column($stats['by_role'], 'count')) ?></h3>
                     <p class="mb-0">User Roles</p>
+                    <small class="text-white-50">Single Admin System</small>
                 </div>
             </div>
         </div>
@@ -207,7 +208,8 @@
                             </div>
 
                             <div class="action-buttons">
-                                <button class="btn btn-sm btn-outline-primary" onclick="editUser(<?= $user['user_id'] ?>)">
+                                <button class="btn btn-sm btn-outline-primary" onclick="editUser(<?= $user['user_id'] ?>)" 
+                                        <?= ($user['role'] === 'admin' && !$this->session->get('user')['user_id'] == $user['user_id']) ? 'disabled title="Admin account is protected"' : '' ?>>
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
                                 <button class="btn btn-sm btn-outline-warning" onclick="resetPassword(<?= $user['user_id'] ?>)">
@@ -217,14 +219,20 @@
                                     <i class="fas fa-history"></i> Activity
                                 </button>
                                 <button class="btn btn-sm btn-outline-<?= $user['status'] === 'active' ? 'secondary' : 'success' ?>" 
-                                        onclick="toggleStatus(<?= $user['user_id'] ?>)">
+                                        onclick="toggleStatus(<?= $user['user_id'] ?>)"
+                                        <?= $user['role'] === 'admin' ? 'disabled title="Admin account cannot be deactivated"' : '' ?>>
                                     <i class="fas fa-<?= $user['status'] === 'active' ? 'pause' : 'play' ?>"></i> 
                                     <?= $user['status'] === 'active' ? 'Deactivate' : 'Activate' ?>
                                 </button>
-                                <?php if ($user['user_id'] != session()->get('user')['user_id']): ?>
+                                <?php if ($user['user_id'] != session()->get('user')['user_id'] && $user['role'] !== 'admin'): ?>
                                     <button class="btn btn-sm btn-outline-danger" onclick="deleteUser(<?= $user['user_id'] ?>)">
                                         <i class="fas fa-trash"></i> Delete
                                     </button>
+                                <?php endif; ?>
+                                <?php if ($user['role'] === 'admin'): ?>
+                                    <span class="badge bg-warning ms-2" title="Admin Account">
+                                        <i class="fas fa-shield-alt"></i> Protected
+                                    </span>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -284,6 +292,12 @@
                                         <option value="<?= $role ?>"><?= ucfirst($role) ?></option>
                                     <?php endforeach; ?>
                                 </select>
+                                <?php if (isset($adminExists) && $adminExists): ?>
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Admin role not available - admin account already exists
+                                    </small>
+                                <?php endif; ?>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Branch *</label>

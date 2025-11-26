@@ -66,17 +66,31 @@ class UserManagementController extends EnhancedBaseController
     {
         $this->requireRole(['admin', 'it_staff']);
 
+        // Check if there's already an admin account
+        if ($this->request->getPost('role') === 'admin') {
+            $existingAdmin = $this->userModel->where('role', 'admin')->where('status', 'active')->first();
+            if ($existingAdmin) {
+                return $this->sendForbidden('Admin account already exists. Only one admin is allowed.');
+            }
+        }
+
         if ($this->request->getMethod() === 'POST') {
             $rules = [
                 'username' => 'required|min_length[3]|max_length[50]|is_unique[users.username]',
                 'email' => 'required|valid_email|is_unique[users.email]',
                 'first_name' => 'required|min_length[2]|max_length[50]',
                 'last_name' => 'required|min_length[2]|max_length[50]',
-                'role' => 'required|in_list[admin,doctor,nurse,receptionist,lab_staff,pharmacist,accountant,it_staff]',
+                'role' => 'required|in_list[doctor,nurse,receptionist,lab_staff,pharmacist,accountant,it_staff]',
                 'branch_id' => 'required|integer|is_not_unique[branches.id]',
                 'phone' => 'permit_empty|regex_match[/^[\+]?[0-9]{10,15}$/]',
                 'password' => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/]'
             ];
+
+            // Only allow admin role if no admin exists
+            $existingAdmin = $this->userModel->where('role', 'admin')->where('status', 'active')->first();
+            if (!$existingAdmin) {
+                $rules['role'] = 'required|in_list[admin,doctor,nurse,receptionist,lab_staff,pharmacist,accountant,it_staff]';
+            }
 
             if (!$this->validateRequest($rules)) {
                 return;
@@ -97,9 +111,13 @@ class UserManagementController extends EnhancedBaseController
             return $this->sendServerError('Failed to create user');
         }
 
+        // Check if admin already exists to hide admin option
+        $existingAdmin = $this->userModel->where('role', 'admin')->where('status', 'active')->first();
+        
         return view('admin/create_user', [
-            'roles' => $this->userModel->getAvailableRoles(),
-            'branches' => $this->userModel->getBranches()
+            'roles' => $this->getAvailableRolesForCreation($existingAdmin),
+            'branches' => $this->userModel->getBranches(),
+            'adminExists' => (bool)$existingAdmin
         ]);
     }
 
@@ -116,16 +134,38 @@ class UserManagementController extends EnhancedBaseController
             return $this->sendNotFound('User not found');
         }
 
+        // Prevent editing admin role if admin already exists and this is not the admin
+        if ($user['role'] === 'admin') {
+            $currentAdmin = $this->userModel->where('role', 'admin')->where('id !=', $userId)->where('status', 'active')->first();
+            if ($currentAdmin) {
+                return $this->sendForbidden('Cannot edit admin account when another admin exists.');
+            }
+        }
+
         if ($this->request->getMethod() === 'POST') {
+            // Check if trying to change role to admin when admin already exists
+            if ($this->request->getPost('role') === 'admin') {
+                $existingAdmin = $this->userModel->where('role', 'admin')->where('id !=', $userId)->where('status', 'active')->first();
+                if ($existingAdmin) {
+                    return $this->sendForbidden('Admin account already exists. Only one admin is allowed.');
+                }
+            }
+
             $rules = [
                 'username' => "required|min_length[3]|max_length[50]|is_unique[users.username,id,{$userId}]",
                 'email' => "required|valid_email|is_unique[users.email,id,{$userId}]",
                 'first_name' => 'required|min_length[2]|max_length[50]',
                 'last_name' => 'required|min_length[2]|max_length[50]',
-                'role' => 'required|in_list[admin,doctor,nurse,receptionist,lab_staff,pharmacist,accountant,it_staff]',
+                'role' => 'required|in_list[doctor,nurse,receptionist,lab_staff,pharmacist,accountant,it_staff]',
                 'branch_id' => 'required|integer|is_not_unique[branches.id]',
                 'phone' => 'permit_empty|regex_match[/^[\+]?[0-9]{10,15}$/]'
             ];
+
+            // Allow admin role only if this is the admin or no admin exists
+            $existingAdmin = $this->userModel->where('role', 'admin')->where('id !=', $userId)->where('status', 'active')->first();
+            if (!$existingAdmin || $user['role'] === 'admin') {
+                $rules['role'] = 'required|in_list[admin,doctor,nurse,receptionist,lab_staff,pharmacist,accountant,it_staff]';
+            }
 
             if (!$this->validateRequest($rules)) {
                 return;
@@ -154,10 +194,14 @@ class UserManagementController extends EnhancedBaseController
             return $this->sendServerError('Failed to update user');
         }
 
+        // Check if admin already exists to hide admin option
+        $existingAdmin = $this->userModel->where('role', 'admin')->where('id !=', $userId)->where('status', 'active')->first();
+        
         return view('admin/edit_user', [
             'user' => $user,
-            'roles' => $this->userModel->getAvailableRoles(),
-            'branches' => $this->userModel->getBranches()
+            'roles' => $this->getAvailableRolesForCreation($existingAdmin, $user),
+            'branches' => $this->userModel->getBranches(),
+            'canEditAdmin' => !$existingAdmin || $user['role'] === 'admin'
         ]);
     }
 
@@ -243,12 +287,40 @@ class UserManagementController extends EnhancedBaseController
             return $this->sendForbidden('Cannot delete your own account');
         }
 
+        // Prevent deletion of admin account
+        if ($user['role'] === 'admin') {
+            return $this->sendForbidden('Cannot delete admin account');
+        }
+
         if ($this->userModel->delete($userId)) {
             $this->logActivity('User Deleted', "Deleted user: {$user['username']}", ['user_id' => $userId]);
             return $this->sendSuccess(null, 'User deleted successfully');
         }
 
         return $this->sendServerError('Failed to delete user');
+    }
+
+    /**
+     * Get available roles for user creation/editing
+     */
+    protected function getAvailableRolesForCreation($existingAdmin = null, $currentUser = null)
+    {
+        $roles = [
+            'doctor',
+            'nurse', 
+            'receptionist',
+            'lab_staff',
+            'pharmacist',
+            'accountant',
+            'it_staff'
+        ];
+
+        // Only allow admin role if no admin exists or editing existing admin
+        if (!$existingAdmin || ($currentUser && $currentUser['role'] === 'admin')) {
+            array_unshift($roles, 'admin');
+        }
+
+        return $roles;
     }
 
     /**
