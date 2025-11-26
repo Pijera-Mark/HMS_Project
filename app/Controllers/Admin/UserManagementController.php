@@ -396,6 +396,6 @@ class UserManagementController extends EnhancedBaseController
     {
         // For now, redirect to CSV export
         // In production, you'd use a library like PhpSpreadsheet
-        return $this->exportToCSV($users);
+        $this->exportToCSV($users);
     }
 }
