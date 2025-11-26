@@ -7,7 +7,7 @@
 			<i class="fas fa-file-invoice-dollar me-2"></i>
 			Invoice <?= esc($invoice['invoice_number']) ?>
 		</h1>
-		<a href="/invoices" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Invoices</a>
+		<a href="/invoices" class="btn btn-outline-secondary"><i class="fas removed me-1"></i>Back to Invoices</a>
 	</div>
 
 	<div class="row g-4">

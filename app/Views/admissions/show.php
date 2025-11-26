@@ -7,7 +7,7 @@
 			<i class="fas fa-hospital-user me-2"></i>
 			Admission #<?= esc($admission['id']) ?>
 		</h1>
-		<a href="/admissions" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Admissions</a>
+		<a href="/admissions" class="btn btn-outline-secondary"><i class="fas removed me-1"></i>Back to Admissions</a>
 	</div>
 
 	<div class="row g-4">

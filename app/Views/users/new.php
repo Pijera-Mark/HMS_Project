@@ -2,16 +2,21 @@
 
 <?= $this->section('content') ?>
 <div class="container">
-	<div class="d-flex justify-content-between align-items-center mb-4">
-		<h1><i class="fas fa-user-plus me-2"></i>Add User</h1>
-		<a href="/users" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Users</a>
-	</div>
+    <div class="mb-4">
+        <h1><i class="fas fa-user-plus me-2"></i>Create New User</h1>
+    </div>
 
-	<div class="card">
-		<div class="card-body">
-			<?php if (session()->has('errors')): ?>
-				<div class="alert alert-danger">
-					<ul class="mb-0">
+    <div class="card">
+        <div class="card-body">
+            <?php if (session()->has('errors')): ?>
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        <?php foreach (session('errors') as $error): ?>
+                            <li><?= esc($error) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
 						<?php foreach (session('errors') as $error): ?>
 							<li><?= esc($error) ?></li>
 						<?php endforeach; ?>

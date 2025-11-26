@@ -1,17 +1,14 @@
 <?= $this->extend('layout') ?>
 
 <?= $this->section('content') ?>
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="fas fa-id-card me-2"></i>Patient Details</h1>
-        <div>
-            <a href="/patients/edit/<?= esc($patient['patient_id']) ?>" class="btn btn-warning me-2">
-                <i class="fas fa-edit me-1"></i>Edit
-            </a>
-            <a href="/patients" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i>Back to Patients
-            </a>
-        </div>
+<div class="container">
+    <div class="mb-4">
+        <h1><i class="fas fa-user-injured me-2"></i>Patient Details</h1>
+    </div>
+    <div class="mb-4">
+        <a href="/patients/edit/<?= esc($patient['patient_id']) ?>" class="btn btn-warning me-2">
+            <i class="fas fa-edit me-1"></i>Edit
+        </a>
     </div>
 
     <div class="card mb-4">

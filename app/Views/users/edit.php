@@ -4,7 +4,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1><i class="fas fa-user-edit me-2"></i>Edit User</h1>
-        <a href="/users" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Users</a>
+        <a href="/users" class="btn btn-outline-secondary"><i class="fas removed me-1"></i>Back to Users</a>
     </div>
 
     <div class="card">

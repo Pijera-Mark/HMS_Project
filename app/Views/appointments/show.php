@@ -6,7 +6,7 @@
         <h1><i class="fas fa-calendar-day me-2"></i>Appointment Details</h1>
         <div>
             <a href="/appointments" class="btn btn-outline-secondary me-2">
-                <i class="fas fa-arrow-left me-1"></i>Back to Appointments
+                <i class="fas removed me-1"></i>Back to Appointments
             </a>
             <a href="/appointments/confirm/<?= esc($appointment['id']) ?>" class="btn btn-success me-1">
                 <i class="fas fa-check me-1"></i>Confirm

@@ -2,9 +2,8 @@
 
 <?= $this->section('content') ?>
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="mb-4">
         <h1><i class="fas fa-user-plus me-2"></i>Add Patient</h1>
-        <a href="/patients" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Patients</a>
     </div>
 
     <div class="card">

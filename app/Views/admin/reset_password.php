@@ -130,9 +130,6 @@
 
             <!-- Action Buttons -->
             <div class="text-center mt-4">
-                <a href="/admin/user-management" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Back to User Management
-                </a>
                 <button type="button" class="btn btn-danger" onclick="confirmReset()">
                     <i class="fas fa-redo me-2"></i>Reset Again
                 </button>

@@ -4,7 +4,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1><i class="fas fa-code-branch me-2"></i>Add Branch</h1>
-        <a href="/branches" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Branches</a>
+        <a href="/branches" class="btn btn-outline-secondary"><i class="fas removed me-1"></i>Back to Branches</a>
     </div>
 
     <div class="card">

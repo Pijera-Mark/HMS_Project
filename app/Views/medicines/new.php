@@ -4,7 +4,7 @@
 <div class="container">
 	<div class="d-flex justify-content-between align-items-center mb-4">
 		<h1><i class="fas fa-pills me-2"></i>Add Medicine</h1>
-		<a href="/medicines" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Medicines</a>
+		<a href="/medicines" class="btn btn-outline-secondary"><i class="fas removed me-1"></i>Back to Medicines</a>
 	</div>
 
 	<div class="card">

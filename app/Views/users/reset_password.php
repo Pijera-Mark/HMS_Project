@@ -2,9 +2,8 @@
 
 <?= $this->section('content') ?>
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="mb-4">
         <h1><i class="fas fa-key me-2"></i>Reset Password</h1>
-        <a href="/users" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Users</a>
     </div>
 
     <div class="card">

@@ -4,7 +4,7 @@
 <div class="container">
 	<div class="d-flex justify-content-between align-items-center mb-4">
 		<h1><i class="fas fa-file-invoice-dollar me-2"></i>New Invoice</h1>
-		<a href="/invoices" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Invoices</a>
+		<a href="/invoices" class="btn btn-outline-secondary"><i class="fas removed me-1"></i>Back to Invoices</a>
 	</div>
 
 	<div class="card">

@@ -4,8 +4,8 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-            <button type="button" class="btn btn-outline-secondary btn-sm me-3" onclick="window.history.back()">
-                <i class="fas fa-arrow-left me-1"></i> Back
+            <button type="button" class="btn btn-outline-secondary btn-sm me-3" onclick="">
+                <i class="fas removed me-1"></i> Back
             </button>
             <h1 class="mb-0"><i class="fas fa-users me-2"></i>Patients</h1>
         </div>

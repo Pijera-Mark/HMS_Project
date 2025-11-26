@@ -4,7 +4,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1><i class="fas fa-calendar-plus me-2"></i>New Appointment</h1>
-        <a href="/appointments" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Appointments</a>
+        <a href="/appointments" class="btn btn-outline-secondary"><i class="fas removed me-1"></i>Back to Appointments</a>
     </div>
 
     <?php if (session()->has('errors')): ?>
