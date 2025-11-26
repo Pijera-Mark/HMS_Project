@@ -224,7 +224,7 @@ class UserModel extends Model
     /**
      * Get users by role statistics
      */
-    public function getUsersByRole()
+    public function getUsersByRoleStats()
     {
         return $this->select('role, COUNT(*) as count')
                     ->groupBy('role')
@@ -341,13 +341,9 @@ class UserModel extends Model
             'total' => $this->countAll(),
             'active' => $this->where('status', 'active')->countAllResults(),
             'inactive' => $this->where('status', 'inactive')->countAllResults(),
-            'by_role' => $this->getUsersByRole(),
+            'by_role' => $this->getUsersByRoleStats(),
             'by_branch' => $this->getUsersByBranch()
         ];
-    }
-    public function softDelete($id)
-    {
-        return $this->update($id, ['status' => 'inactive']);
     }
 
     /**
