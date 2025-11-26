@@ -125,4 +125,76 @@ class DashboardController extends BaseController
             'recent_appointments' => $recentAppointments,
         ]);
     }
+
+    public function help()
+    {
+        return view('help/index', [
+            'user' => session()->get('user')
+        ]);
+    }
+
+    // Temporary methods for sidebar features
+    public function wards()
+    {
+        return view('temp/wards', [
+            'user' => session()->get('user'),
+            'message' => 'Ward Management feature coming soon!'
+        ]);
+    }
+
+    public function medicalRecords()
+    {
+        return view('temp/medical-records', [
+            'user' => session()->get('user'),
+            'message' => 'Medical Records feature coming soon!'
+        ]);
+    }
+
+    public function prescriptions()
+    {
+        return view('temp/prescriptions', [
+            'user' => session()->get('user'),
+            'message' => 'Prescriptions feature coming soon!'
+        ]);
+    }
+
+    public function labTests()
+    {
+        return view('temp/lab-tests', [
+            'user' => session()->get('user'),
+            'message' => 'Lab Tests feature coming soon!'
+        ]);
+    }
+
+    public function financialReports()
+    {
+        return view('temp/financial-reports', [
+            'user' => session()->get('user'),
+            'message' => 'Financial Reports feature coming soon!'
+        ]);
+    }
+
+    public function patientReports()
+    {
+        return view('temp/patient-reports', [
+            'user' => session()->get('user'),
+            'message' => 'Patient Reports feature coming soon!'
+        ]);
+    }
+
+    public function auditTrail()
+    {
+        return view('temp/audit-trail', [
+            'user' => session()->get('user'),
+            'message' => 'Audit Trail feature coming soon!'
+        ]);
+    }
+
+    public function profile()
+    {
+        return view('temp/profile', [
+            'user' => session()->get('user'),
+            'message' => 'Profile management feature coming soon!'
+        ]);
+    }
 }

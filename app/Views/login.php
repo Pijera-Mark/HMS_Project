@@ -1,4 +1,4 @@
-<?= $this->extend('layout') ?>
+<?= $this->extend('auth/layout') ?>
 
 <?= $this->section('content') ?>
 <div class="login-container">
@@ -105,38 +105,61 @@
     justify-content: center;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 20px;
-}
-
-.login-wrapper {
-    display: flex;
-    width: 100%;
-    max-width: 1200px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-    overflow: hidden;
-    min-height: 600px;
-}
-
-.login-left {
-    flex: 1;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
     position: relative;
+    overflow: hidden;
 }
 
-.login-left::before {
+.login-container::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
-    opacity: 0.3;
+    background-image: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.login-wrapper {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    box-shadow: 0 25px 80px rgba(31, 38, 135, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    overflow: hidden;
+    min-height: 600px;
+    position: relative;
+    z-index: 1;
+}
+
+.login-left {
+    flex: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-left::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: float 8s ease-in-out infinite;
 }
 
 .welcome-content {
@@ -147,10 +170,16 @@
 }
 
 .main-icon {
-    font-size: 4rem;
-    margin-bottom: 20px;
+    font-size: 4.5rem;
+    margin-bottom: 25px;
     color: white;
     text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    animation: iconPulse 3s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 .welcome-content h1 {
@@ -176,12 +205,19 @@
 .feature-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 15px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
+    gap: 12px;
+    padding: 18px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
 .feature-item i {
@@ -199,7 +235,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f8f9fa;
+    background: rgba(248, 249, 250, 0.8);
+    backdrop-filter: blur(10px);
 }
 
 .login-form-container {
@@ -266,8 +303,8 @@
 
 .form-group input:focus {
     outline: none;
-    border-color: #4facfe;
-    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .password-input {
@@ -319,8 +356,8 @@
 }
 
 .remember-me input:checked + .checkmark {
-    background: #4facfe;
-    border-color: #4facfe;
+    background: #667eea;
+    border-color: #667eea;
 }
 
 .remember-me input:checked + .checkmark::after {
@@ -334,7 +371,7 @@
 }
 
 .forgot-password {
-    color: #4facfe;
+    color: #667eea;
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -347,10 +384,10 @@
 .login-btn {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -359,11 +396,12 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .login-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
 .login-footer {
@@ -377,7 +415,7 @@
 }
 
 .signup-link {
-    color: #4facfe;
+    color: #667eea;
     text-decoration: none;
     font-weight: 500;
 }

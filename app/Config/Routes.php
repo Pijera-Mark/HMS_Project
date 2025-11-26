@@ -67,6 +67,18 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('invoices/show/(:num)', 'InvoiceController::show/$1');
     $routes->post('invoices/mark-paid/(:num)', 'InvoiceController::markPaid/$1');
     $routes->get('invoices/delete/(:num)', 'InvoiceController::delete/$1');
+
+    // Missing routes for sidebar features
+    $routes->get('doctors', 'UserController::index'); // Using UserController for doctors temporarily
+    $routes->get('wards', 'DashboardController::wards'); // Temporary route
+    $routes->get('medical-records', 'DashboardController::medicalRecords'); // Temporary route
+    $routes->get('prescriptions', 'DashboardController::prescriptions'); // Temporary route
+    $routes->get('lab-tests', 'DashboardController::labTests'); // Temporary route
+    $routes->get('reports/financial', 'DashboardController::financialReports'); // Temporary route
+    $routes->get('reports/patient', 'DashboardController::patientReports'); // Temporary route
+    $routes->get('reports/audit', 'DashboardController::auditTrail'); // Temporary route
+    $routes->get('profile', 'DashboardController::profile'); // Temporary route
+    $routes->get('help', 'DashboardController::help'); // Temporary route
 });
 
 // API Routes
