@@ -38,6 +38,36 @@ FEATURE REQUESTS.
 This repository is a "distribution" one, built by our release preparation script.
 Problems with it can be raised on our forum, or as issues in the main repository.
 
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Pijera-Mark/HMS_Project.git
+   cd HMS_Project
+   ```
+
+2. Install dependencies:
+   ```bash
+   composer install
+   ```
+
+3. Configure environment:
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Set up your database and update `.env` file with your database credentials
+
+5. Run database migrations:
+   ```bash
+   php spark migrate
+   ```
+
+6. Start the development server:
+   ```bash
+   php spark serve
+   ```
+
 ## Contributing
 
 We welcome contributions from the community.
