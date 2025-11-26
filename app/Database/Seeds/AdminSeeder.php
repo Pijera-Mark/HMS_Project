@@ -10,8 +10,8 @@ class AdminSeeder extends Seeder
     {
         $data = [
             'name'      => 'Hospital Administrator',
-            'email'     => 'administrator@hms.local',
-            'password'  => password_hash('hms@dm1n#2024', PASSWORD_DEFAULT),
+            'email'     => 'admin@hospital.com',
+            'password'  => password_hash('Hospital@2024', PASSWORD_DEFAULT),
             'role'      => 'admin',
             'status'    => 'active',
             'branch_id' => null,
@@ -21,9 +21,13 @@ class AdminSeeder extends Seeder
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
+        // Remove any existing admin accounts first
+        $this->db->table('users')->where('role', 'admin')->delete();
+
+        // Insert the new admin
         $this->db->table('users')->insert($data);
         echo "Admin user created successfully!\n";
-        echo "Email: administrator@hms.local\n";
-        echo "Password: hms@dm1n#2024\n";
+        echo "Email: admin@hospital.com\n";
+        echo "Password: Hospital@2024\n";
     }
 }
