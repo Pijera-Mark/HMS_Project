@@ -308,7 +308,7 @@ class UserManagementController extends EnhancedBaseController
             'active_users' => $this->userModel->where('status', 'active')->countAllResults(),
             'inactive_users' => $this->userModel->where('status', 'inactive')->countAllResults(),
             'by_role' => $this->userModel->getUsersByRoleStats(),
-            'by_branch' => $this->userModel->getUsersByBranch(),
+            'by_branch' => $this->userModel->getUsersByBranchStats(),
             'recent_logins' => $this->userModel->getRecentLogins(10)
         ];
     }

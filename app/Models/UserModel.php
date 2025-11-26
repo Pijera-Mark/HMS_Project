@@ -235,7 +235,7 @@ class UserModel extends Model
     /**
      * Get users by branch statistics
      */
-    public function getUsersByBranch()
+    public function getUsersByBranchStats()
     {
         return $this->select('branches.name, COUNT(*) as count')
                     ->join('branches', 'branches.id = users.branch_id', 'left')
@@ -342,7 +342,7 @@ class UserModel extends Model
             'active' => $this->where('status', 'active')->countAllResults(),
             'inactive' => $this->where('status', 'inactive')->countAllResults(),
             'by_role' => $this->getUsersByRoleStats(),
-            'by_branch' => $this->getUsersByBranch()
+            'by_branch' => $this->getUsersByBranchStats()
         ];
     }
 
