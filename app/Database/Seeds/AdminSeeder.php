@@ -9,9 +9,9 @@ class AdminSeeder extends Seeder
     public function run()
     {
         $data = [
-            'name'      => 'System Administrator',
-            'email'     => 'admin@hms.com',
-            'password'  => password_hash('admin123', PASSWORD_DEFAULT),
+            'name'      => 'Hospital Administrator',
+            'email'     => 'administrator@hms.local',
+            'password'  => password_hash('hms@dm1n#2024', PASSWORD_DEFAULT),
             'role'      => 'admin',
             'status'    => 'active',
             'branch_id' => null,
@@ -23,7 +23,7 @@ class AdminSeeder extends Seeder
 
         $this->db->table('users')->insert($data);
         echo "Admin user created successfully!\n";
-        echo "Email: admin@hms.com\n";
-        echo "Password: admin123\n";
+        echo "Email: administrator@hms.local\n";
+        echo "Password: hms@dm1n#2024\n";
     }
 }

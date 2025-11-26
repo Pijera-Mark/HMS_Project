@@ -9,7 +9,7 @@ POST /api/v1/auth/login
 Content-Type: application/json
 
 {
-    "email": "admin@hms.com",
+    "email": "administrator@hms.local",
     "password": "admin123"
 }
 ```
@@ -22,7 +22,7 @@ Content-Type: application/json
     "user": {
         "id": 1,
         "name": "Admin",
-        "email": "admin@hms.com",
+        "email": "administrator@hms.local",
         "role": "admin"
     }
 }
