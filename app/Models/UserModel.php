@@ -13,7 +13,9 @@ class UserModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'name',
+        'username',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'role',
@@ -21,7 +23,10 @@ class UserModel extends Model
         'phone',
         'avatar_url',
         'status',
-        'last_login'
+        'last_login',
+        'password_reset_at',
+        'created_by',
+        'updated_by'
     ];
 
     protected $useTimestamps = true;
@@ -30,10 +35,12 @@ class UserModel extends Model
     protected $updatedField  = 'updated_at';
 
     protected $validationRules      = [
-        'name'     => 'required|min_length[3]|max_length[255]|alpha_space',
+        'username' => 'required|min_length[3]|max_length[50]|alpha_numeric|is_unique[users.username,id,{id}]',
+        'first_name' => 'required|min_length[2]|max_length[50]|alpha_space',
+        'last_name' => 'required|min_length[2]|max_length[50]|alpha_space',
         'email'    => 'required|valid_email|is_unique[users.email,id,{id}]',
         'password' => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/]',
-        'role'     => 'required|in_list[admin,doctor,nurse,receptionist,pharmacist,lab,accountant,it]',
+        'role'     => 'required|in_list[admin,doctor,nurse,receptionist,pharmacist,lab_staff,accountant,it_staff]',
         'phone'    => 'permit_empty|regex_match[/^[\+]?[0-9]{10,15}$/]',
         'branch_id' => 'permit_empty|integer|is_not_unique[branches.id]'
     ];
@@ -140,6 +147,204 @@ class UserModel extends Model
     /**
      * Soft delete user (change status to inactive)
      */
+    public function softDelete($id)
+    {
+        return $this->update($id, ['status' => 'inactive']);
+    }
+
+    /**
+     * Get all users with details
+     */
+    public function getAllUsersWithDetails()
+    {
+        return $this->select('users.*, branches.name as branch_name')
+                    ->join('branches', 'branches.id = users.branch_id', 'left')
+                    ->orderBy('users.created_at', 'DESC')
+                    ->findAll();
+    }
+
+    /**
+     * Get filtered users
+     */
+    public function getFilteredUsers($search = null, $role = null, $branchId = null, $status = null)
+    {
+        $builder = $this->select('users.*, branches.name as branch_name')
+                       ->join('branches', 'branches.id = users.branch_id', 'left');
+
+        if ($search) {
+            $builder->groupStart()
+                    ->like('users.username', $search)
+                    ->orLike('users.first_name', $search)
+                    ->orLike('users.last_name', $search)
+                    ->orLike('users.email', $search)
+                    ->groupEnd();
+        }
+
+        if ($role) {
+            $builder->where('users.role', $role);
+        }
+
+        if ($branchId) {
+            $builder->where('users.branch_id', $branchId);
+        }
+
+        if ($status) {
+            $builder->where('users.status', $status);
+        }
+
+        return $builder->orderBy('users.created_at', 'DESC')->findAll();
+    }
+
+    /**
+     * Get available roles
+     */
+    public function getAvailableRoles()
+    {
+        return [
+            'admin',
+            'doctor', 
+            'nurse',
+            'receptionist',
+            'lab_staff',
+            'pharmacist',
+            'accountant',
+            'it_staff'
+        ];
+    }
+
+    /**
+     * Get branches
+     */
+    public function getBranches()
+    {
+        $db = \Config\Database::connect();
+        return $db->table('branches')->select('id, name')->get()->getResultArray();
+    }
+
+    /**
+     * Get users by role statistics
+     */
+    public function getUsersByRole()
+    {
+        return $this->select('role, COUNT(*) as count')
+                    ->groupBy('role')
+                    ->get()
+                    ->getResultArray();
+    }
+
+    /**
+     * Get users by branch statistics
+     */
+    public function getUsersByBranch()
+    {
+        return $this->select('branches.name, COUNT(*) as count')
+                    ->join('branches', 'branches.id = users.branch_id', 'left')
+                    ->groupBy('users.branch_id')
+                    ->get()
+                    ->getResultArray();
+    }
+
+    /**
+     * Get recent logins
+     */
+    public function getRecentLogins($limit = 10)
+    {
+        return $this->select('username, first_name, last_name, last_login')
+                    ->where('last_login IS NOT NULL')
+                    ->orderBy('last_login', 'DESC')
+                    ->limit($limit)
+                    ->get()
+                    ->getResultArray();
+    }
+
+    /**
+     * Update last login
+     */
+    public function updateLastLogin($userId)
+    {
+        return $this->update($userId, ['last_login' => date('Y-m-d H:i:s')]);
+    }
+
+    /**
+     * Check if username exists
+     */
+    public function usernameExists($username, $excludeId = null)
+    {
+        $builder = $this->where('username', $username);
+        
+        if ($excludeId) {
+            $builder->where('id !=', $excludeId);
+        }
+        
+        return $builder->countAllResults() > 0;
+    }
+
+    /**
+     * Check if email exists
+     */
+    public function emailExists($email, $excludeId = null)
+    {
+        $builder = $this->where('email', $email);
+        
+        if ($excludeId) {
+            $builder->where('id !=', $excludeId);
+        }
+        
+        return $builder->countAllResults() > 0;
+    }
+
+    /**
+     * Get user by username
+     */
+    public function getUserByUsername($username)
+    {
+        return $this->where('username', $username)->first();
+    }
+
+    /**
+     * Get user by email
+     */
+    public function getUserByEmail($email)
+    {
+        return $this->where('email', $email)->first();
+    }
+
+    /**
+     * Change user status
+     */
+    public function changeStatus($userId, $status)
+    {
+        return $this->update($userId, [
+            'status' => $status,
+            'updated_by' => session()->get('user')['user_id'] ?? null
+        ]);
+    }
+
+    /**
+     * Reset user password
+     */
+    public function resetPassword($userId, $newPassword)
+    {
+        return $this->update($userId, [
+            'password' => password_hash($newPassword, PASSWORD_DEFAULT),
+            'password_reset_at' => date('Y-m-d H:i:s'),
+            'updated_by' => session()->get('user')['user_id'] ?? null
+        ]);
+    }
+
+    /**
+     * Get user statistics
+     */
+    public function getUserStatistics()
+    {
+        return [
+            'total' => $this->countAll(),
+            'active' => $this->where('status', 'active')->countAllResults(),
+            'inactive' => $this->where('status', 'inactive')->countAllResults(),
+            'by_role' => $this->getUsersByRole(),
+            'by_branch' => $this->getUsersByBranch()
+        ];
+    }
     public function softDelete($id)
     {
         return $this->update($id, ['status' => 'inactive']);

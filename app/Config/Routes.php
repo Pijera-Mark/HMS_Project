@@ -14,6 +14,23 @@ $routes->get('dashboard', 'DashboardController::index', ['filter' => 'auth']);
 
 $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('logout', 'LoginController::logout');
+    
+    // Admin User Management Routes
+    $routes->group('admin/user-management', ['filter' => 'role:admin,it_staff'], static function ($routes) {
+        $routes->get('/', 'Admin\UserManagementController::index');
+        $routes->get('users', 'Admin\UserManagementController::getUsers');
+        $routes->get('create', 'Admin\UserManagementController::createUser');
+        $routes->post('create', 'Admin\UserManagementController::createUser');
+        $routes->get('edit/(:num)', 'Admin\UserManagementController::editUser/$1');
+        $routes->post('edit/(:num)', 'Admin\UserManagementController::editUser/$1');
+        $routes->get('reset-password/(:num)', 'Admin\UserManagementController::resetPassword/$1');
+        $routes->post('reset-password/(:num)', 'Admin\UserManagementController::resetPassword/$1');
+        $routes->post('change-status/(:num)', 'Admin\UserManagementController::changeStatus/$1');
+        $routes->post('delete/(:num)', 'Admin\UserManagementController::deleteUser/$1');
+        $routes->get('activity/(:num)', 'Admin\UserManagementController::getUserActivity/$1');
+        $routes->get('export', 'Admin\UserManagementController::exportUsers');
+    });
+    
     $routes->get('patients', 'PatientController::index');
     $routes->get('patients/show/(:num)', 'PatientController::show/$1');
     $routes->get('patients/new', 'PatientController::new');

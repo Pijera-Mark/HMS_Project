@@ -16,6 +16,8 @@ class ActivityLogModel extends Model
         'user_id',
         'user_name',
         'action',
+        'description',
+        'data',
         'entity_type',
         'entity_id',
         'details',
