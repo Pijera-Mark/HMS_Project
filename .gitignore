@@ -33,7 +33,3 @@ composer.lock
 
 # Node modules (if using npm)
 node_modules/
-
-# Session and debug files
-public/null/ci_session*
-writable/debugbar/debugbar_*

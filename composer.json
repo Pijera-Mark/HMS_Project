@@ -1,26 +1,12 @@
 {
-    "name": "pijera-mark/hms-project",
-    "description": "A comprehensive Hospital Management System built with CodeIgniter 4 framework",
+    "name": "codeigniter4/framework",
+    "description": "The CodeIgniter framework v4",
     "license": "MIT",
     "type": "project",
-    "homepage": "https://github.com/Pijera-Mark/HMS_Project",
-    "authors": [
-        {
-            "name": "Pijera-Mark",
-            "email": "trimuru704@gmail.com"
-        },
-        {
-            "name": "cuaton",
-            "email": "jademonsalod8@gmail.com"
-        },
-        {
-            "name": "Jedlang1502",
-            "email": "masterbuten66@gmail.com"
-        }
-    ],
+    "homepage": "https://codeigniter.com",
     "support": {
         "forum": "https://forum.codeigniter.com/",
-        "source": "https://github.com/Pijera-Mark/HMS_Project",
+        "source": "https://github.com/codeigniter4/CodeIgniter4",
         "slack": "https://codeigniterchat.slack.com"
     },
     "require": {

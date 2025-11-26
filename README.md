@@ -18,23 +18,6 @@ A comprehensive Hospital Management System built with CodeIgniter 4 framework.
 - **Database**: MySQL/MariaDB
 - **API**: RESTful JSON API
 
-## Project Structure
-
-```
-HMS_Project/
-├── app/                    # Application source code
-│   ├── Controllers/        # MVC Controllers
-│   ├── Models/            # Database Models
-│   ├── Views/             # View templates
-│   └── Database/          # Database migrations and seeds
-├── public/                # Public web root
-├── writable/              # Writable files (logs, cache, uploads)
-├── system/                # CodeIgniter 4 framework
-├── tests/                 # Unit and integration tests
-├── composer.json          # PHP dependencies
-└── README.md              # This file
-```
-
 ## Important Change with index.php
 
 `index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
@@ -54,36 +37,6 @@ FEATURE REQUESTS.
 
 This repository is a "distribution" one, built by our release preparation script.
 Problems with it can be raised on our forum, or as issues in the main repository.
-
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Pijera-Mark/HMS_Project.git
-   cd HMS_Project
-   ```
-
-2. Install dependencies:
-   ```bash
-   composer install
-   ```
-
-3. Configure environment:
-   ```bash
-   cp .env.example .env
-   ```
-
-4. Set up your database and update `.env` file with your database credentials
-
-5. Run database migrations:
-   ```bash
-   php spark migrate
-   ```
-
-6. Start the development server:
-   ```bash
-   php spark serve
-   ```
 
 ## Contributing
 
