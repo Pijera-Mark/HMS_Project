@@ -18,6 +18,23 @@ A comprehensive Hospital Management System built with CodeIgniter 4 framework.
 - **Database**: MySQL/MariaDB
 - **API**: RESTful JSON API
 
+## Project Structure
+
+```
+HMS_Project/
+├── app/                    # Application source code
+│   ├── Controllers/        # MVC Controllers
+│   ├── Models/            # Database Models
+│   ├── Views/             # View templates
+│   └── Database/          # Database migrations and seeds
+├── public/                # Public web root
+├── writable/              # Writable files (logs, cache, uploads)
+├── system/                # CodeIgniter 4 framework
+├── tests/                 # Unit and integration tests
+├── composer.json          # PHP dependencies
+└── README.md              # This file
+```
+
 ## Important Change with index.php
 
 `index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
