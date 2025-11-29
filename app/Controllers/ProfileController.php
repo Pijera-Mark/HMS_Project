@@ -24,11 +24,12 @@ class ProfileController extends BaseController
     public function index()
     {
         // Check if user is logged in
-        if (!session()->get('user_id')) {
+        $userSession = session()->get('user');
+        if (!$userSession || !isset($userSession['id'])) {
             return redirect()->to('/login')->with('error', 'Please login to access your profile');
         }
 
-        $userId = session()->get('user_id');
+        $userId = $userSession['id'];
         
         $profile = $this->profileService->getProfile($userId);
         
@@ -56,11 +57,12 @@ class ProfileController extends BaseController
     public function edit()
     {
         // Check if user is logged in
-        if (!session()->get('user_id')) {
+        $userSession = session()->get('user');
+        if (!$userSession || !isset($userSession['id'])) {
             return redirect()->to('/login')->with('error', 'Please login to access your profile');
         }
 
-        $userId = session()->get('user_id');
+        $userId = $userSession['id'];
         $profile = $this->profileService->getProfile($userId);
 
         $data = [
@@ -80,11 +82,12 @@ class ProfileController extends BaseController
     public function update()
     {
         // Check if user is logged in
-        if (!session()->get('user_id')) {
+        $userSession = session()->get('user');
+        if (!$userSession || !isset($userSession['id'])) {
             return redirect()->to('/login')->with('error', 'Please login to access your profile');
         }
 
-        $userId = session()->get('user_id');
+        $userId = $userSession['id'];
         $data = $this->request->getPost();
 
         $result = $this->profileService->updateBasicInfo($userId, $data);
@@ -102,16 +105,18 @@ class ProfileController extends BaseController
     public function security()
     {
         // Check if user is logged in
-        if (!session()->get('user_id')) {
+        $userSession = session()->get('user');
+        if (!$userSession || !isset($userSession['id'])) {
             return redirect()->to('/login')->with('error', 'Please login to access your profile');
         }
 
-        $userId = session()->get('user_id');
+        $userId = $userSession['id'];
         $profile = $this->profileService->getProfile($userId);
 
         $data = [
             'title' => 'Security Settings',
             'profile' => $profile,
+            'user' => $userSession,
             'notification_preferences' => $profile['notification_preferences'] ?? $this->getDefaultNotificationPreferences()
         ];
 
@@ -124,11 +129,12 @@ class ProfileController extends BaseController
     public function updatePassword()
     {
         // Check if user is logged in
-        if (!session()->get('user_id')) {
+        $userSession = session()->get('user');
+        if (!$userSession || !isset($userSession['id'])) {
             return redirect()->to('/login')->with('error', 'Please login to access your profile');
         }
 
-        $userId = session()->get('user_id');
+        $userId = $userSession['id'];
         $data = $this->request->getPost();
 
         $result = $this->profileService->changePassword(
@@ -158,11 +164,12 @@ class ProfileController extends BaseController
     public function updateNotifications()
     {
         // Check if user is logged in
-        if (!session()->get('user_id')) {
+        $userSession = session()->get('user');
+        if (!$userSession || !isset($userSession['id'])) {
             return redirect()->to('/login')->with('error', 'Please login to access your profile');
         }
 
-        $userId = session()->get('user_id');
+        $userId = $userSession['id'];
         $preferences = $this->request->getPost('preferences');
 
         if (!is_array($preferences)) {
@@ -184,11 +191,12 @@ class ProfileController extends BaseController
     public function uploadPicture()
     {
         // Check if user is logged in
-        if (!session()->get('user_id')) {
+        $userSession = session()->get('user');
+        if (!$userSession || !isset($userSession['id'])) {
             return redirect()->to('/login')->with('error', 'Please login to access your profile');
         }
 
-        $userId = session()->get('user_id');
+        $userId = $userSession['id'];
         $file = $this->request->getFile('profile_picture');
 
         $result = $this->profileService->uploadProfilePicture($userId, $file);
@@ -206,11 +214,12 @@ class ProfileController extends BaseController
     public function statistics()
     {
         // Check if user is logged in
-        if (!session()->get('user_id')) {
+        $userSession = session()->get('user');
+        if (!$userSession || !isset($userSession['id'])) {
             return redirect()->to('/login')->with('error', 'Please login to access your profile');
         }
 
-        $userId = session()->get('user_id');
+        $userId = $userSession['id'];
         $profile = $this->profileService->getProfile($userId);
         $stats = $this->profileService->getStatistics($userId);
 
@@ -222,6 +231,36 @@ class ProfileController extends BaseController
         ];
 
         return view('profile/statistics', $data);
+    }
+
+    /**
+     * Delete user account
+     */
+    public function deleteAccount()
+    {
+        // Check if user is logged in
+        $userSession = session()->get('user');
+        if (!$userSession || !isset($userSession['id'])) {
+            return redirect()->to('/login')->with('error', 'Please login to access your profile');
+        }
+
+        // Prevent admin users from deleting their accounts
+        if (($userSession['role'] ?? 'user') === 'admin') {
+            return redirect()->to('/profile/security')->with('error', 'Admin accounts cannot be deleted');
+        }
+
+        $userId = $userSession['id'];
+        
+        // Additional checks can be added here (e.g., dependencies, confirmations)
+        
+        // For now, just redirect with an error message
+        // In a real implementation, you would:
+        // 1. Check for dependencies (appointments, records, etc.)
+        // 2. Soft delete or hard delete the user
+        // 3. Clean up related data
+        // 4. Log the deletion
+        
+        return redirect()->to('/login')->with('error', 'Account deletion is currently disabled for security reasons');
     }
 
     /**

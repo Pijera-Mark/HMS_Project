@@ -204,6 +204,7 @@
                         <hr>
 
                         <!-- Danger Zone -->
+                        <?php if (($user['role'] ?? 'user') !== 'admin'): ?>
                         <div class="mb-3">
                             <h5 class="mb-3 text-danger">
                                 <i class="fas fa-exclamation-triangle me-2"></i>Danger Zone
@@ -217,6 +218,7 @@
                                 <i class="fas fa-trash me-2"></i>Delete Account
                             </button>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

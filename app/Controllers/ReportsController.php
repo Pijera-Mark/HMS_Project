@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\InvoiceModel;
 use App\Models\PatientModel;
 use App\Models\AppointmentModel;
+use App\Models\BranchModel;
 use App\Services\ValidationService;
 
 /**
@@ -17,6 +18,7 @@ class ReportsController extends BaseController
     protected InvoiceModel $invoiceModel;
     protected PatientModel $patientModel;
     protected AppointmentModel $appointmentModel;
+    protected BranchModel $branchModel;
     protected ValidationService $validationService;
 
     public function __construct()
@@ -24,6 +26,7 @@ class ReportsController extends BaseController
         $this->invoiceModel = new InvoiceModel();
         $this->patientModel = new PatientModel();
         $this->appointmentModel = new AppointmentModel();
+        $this->branchModel = new BranchModel();
         $this->validationService = new ValidationService();
     }
 
@@ -47,7 +50,8 @@ class ReportsController extends BaseController
 
         return view('reports/financial', [
             'data' => $data,
-            'filters' => $filters
+            'filters' => $filters,
+            'branches' => $this->branchModel->findAll()
         ]);
     }
 
@@ -71,7 +75,8 @@ class ReportsController extends BaseController
 
         return view('reports/patient', [
             'data' => $data,
-            'filters' => $filters
+            'filters' => $filters,
+            'branches' => $this->branchModel->findAll()
         ]);
     }
 

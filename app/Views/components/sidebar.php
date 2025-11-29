@@ -301,11 +301,25 @@ $userRole = $user['role'] ?? 'guest';
         <div class="menu-section">
             <div class="menu-title">System</div>
             
-            <a href="/profile" class="menu-item <?= (strpos(current_url(), '/profile') !== false) ? 'active' : '' ?>">
+            <a href="/profile" class="menu-item <?= (strpos(current_url(), '/profile') !== false && strpos(current_url(), '/profile/') === false) ? 'active' : '' ?>">
                 <div class="menu-icon">
                     <i class="fas fa-user-circle"></i>
                 </div>
                 <div class="menu-text">My Profile</div>
+            </a>
+
+            <a href="/profile/edit" class="menu-item <?= (strpos(current_url(), '/profile/edit') !== false) ? 'active' : '' ?>">
+                <div class="menu-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div class="menu-text">Edit Profile</div>
+            </a>
+
+            <a href="/profile/security" class="menu-item <?= (strpos(current_url(), '/profile/security') !== false) ? 'active' : '' ?>">
+                <div class="menu-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="menu-text">Security Settings</div>
             </a>
 
             <a href="/help" class="menu-item <?= (strpos(current_url(), '/help') !== false) ? 'active' : '' ?>">
@@ -432,6 +446,119 @@ $userRole = $user['role'] ?? 'guest';
     background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
     backdrop-filter: blur(10px);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.profile-section {
+    margin-top: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+}
+
+.profile-header h5 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: white;
+    font-weight: 600;
+}
+
+.toggle-profile {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 2px;
+    transition: transform 0.3s ease;
+}
+
+.toggle-profile:hover {
+    color: white;
+}
+
+.toggle-profile.collapsed {
+    transform: rotate(-90deg);
+}
+
+.profile-content {
+    padding: 15px;
+    color: white;
+}
+
+.profile-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+}
+
+.profile-item label {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+.profile-item span {
+    color: white;
+    font-weight: 400;
+}
+
+.status-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.status-badge.inactive {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.profile-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-actions .btn {
+    flex: 1;
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.profile-actions .btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    text-decoration: none;
 }
 
 .user-avatar {
@@ -731,5 +858,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    
+    // Profile section toggle
+    window.toggleProfileSection = function() {
+        const content = document.getElementById('profileContent');
+        const toggle = document.querySelector('.toggle-profile');
+        
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            toggle.classList.remove('collapsed');
+        } else {
+            content.style.display = 'none';
+            toggle.classList.add('collapsed');
+        }
+    };
 });
 </script>

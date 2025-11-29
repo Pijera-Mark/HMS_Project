@@ -157,8 +157,8 @@
     <div class="profile-header">
         <div class="container text-center">
             <div class="profile-picture-container">
-                <?php if ($profile && !empty($profile['profile_picture'])): ?>
-                    <img src="<?= base_url($profile['profile_picture']) ?>" alt="Profile Picture" class="profile-picture">
+                <?php if ($profile && !empty($profile['profile_picture'] ?? '')): ?>
+                    <img src="<?= base_url($profile['profile_picture'] ?? '') ?>" alt="Profile Picture" class="profile-picture">
                 <?php else: ?>
                     <img src="https://ui-avatars.com/api/?name=<?= urlencode($user['name']) ?>&size=150&background=007bff&color=fff" alt="Profile Picture" class="profile-picture">
                 <?php endif; ?>
@@ -167,8 +167,8 @@
                 </label>
                 <input type="file" id="profile_picture" name="profile_picture" class="d-none" accept="image/*">
             </div>
-            <h2 class="mt-3"><?= $user['name'] ?></h2>
-            <p class="lead"><?= ucfirst($user['role']) ?></p>
+            <h2 class="mt-3"><?= $user['name'] ?? 'User' ?></h2>
+            <p class="lead"><?= ucfirst($user['role'] ?? 'user') ?></p>
             <div class="completion-badge">
                 <i class="fas fa-check-circle me-2"></i>Profile Completion: <?= $profile_completion ?>%
             </div>
@@ -185,40 +185,40 @@
                     </h4>
                     <div class="info-item">
                         <span class="info-label">Full Name</span>
-                        <span class="info-value"><?= $user['name'] ?></span>
+                        <span class="info-value"><?= $user['name'] ?? 'User' ?></span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Email Address</span>
-                        <span class="info-value"><?= $user['email'] ?></span>
+                        <span class="info-value"><?= $user['email'] ?? 'Not provided' ?></span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Phone Number</span>
-                        <span class="info-value"><?= $user['phone'] ?: 'Not provided' ?></span>
+                        <span class="info-value"><?= $user['phone'] ?? 'Not provided' ?></span>
                     </div>
                     <?php if ($profile): ?>
                         <div class="info-item">
                             <span class="info-label">Address</span>
-                            <span class="info-value"><?= $profile['address'] ?: 'Not provided' ?></span>
+                            <span class="info-value"><?= $profile['address'] ?? 'Not provided' ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">City</span>
-                            <span class="info-value"><?= $profile['city'] ?: 'Not provided' ?></span>
+                            <span class="info-value"><?= $profile['city'] ?? 'Not provided' ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Date of Birth</span>
-                            <span class="info-value"><?= $profile['date_of_birth'] ? date('M d, Y', strtotime($profile['date_of_birth'])) : 'Not provided' ?></span>
+                            <span class="info-value"><?= ($profile['date_of_birth'] ?? null) ? date('M d, Y', strtotime($profile['date_of_birth'])) : 'Not provided' ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Gender</span>
-                            <span class="info-value"><?= $profile['gender'] ? ucfirst($profile['gender']) : 'Not provided' ?></span>
+                            <span class="info-value"><?= ($profile['gender'] ?? null) ? ucfirst($profile['gender']) : 'Not provided' ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Blood Group</span>
-                            <span class="info-value"><?= $profile['blood_group'] ?: 'Not provided' ?></span>
+                            <span class="info-value"><?= $profile['blood_group'] ?? 'Not provided' ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Emergency Contact</span>
-                            <span class="info-value"><?= $profile['emergency_contact_name'] ?: 'Not provided' ?></span>
+                            <span class="info-value"><?= $profile['emergency_contact_name'] ?? 'Not provided' ?></span>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -231,15 +231,15 @@
                     </h4>
                     <div class="info-item">
                         <span class="info-label">Contact Name</span>
-                        <span class="info-value"><?= $profile['emergency_contact_name'] ?></span>
+                        <span class="info-value"><?= $profile['emergency_contact_name'] ?? 'Not provided' ?></span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Contact Phone</span>
-                        <span class="info-value"><?= $profile['emergency_contact_phone'] ?></span>
+                        <span class="info-value"><?= $profile['emergency_contact_phone'] ?? 'Not provided' ?></span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Relationship</span>
-                        <span class="info-value"><?= $profile['emergency_contact_relation'] ?></span>
+                        <span class="info-value"><?= $profile['emergency_contact_relation'] ?? 'Not provided' ?></span>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -289,11 +289,11 @@
                     <h5>Account Status</h5>
                     <div class="profile-stats">
                         <div class="stat-card">
-                            <div class="stat-number"><?= $user['status'] === 'active' ? '<i class="fas fa-check-circle text-success"></i>' : '<i class="fas fa-times-circle text-danger"></i>' ?></div>
+                            <div class="stat-number"><?= ($user['status'] ?? 'inactive') === 'active' ? '<i class="fas fa-check-circle text-success"></i>' : '<i class="fas fa-times-circle text-danger"></i>' ?></div>
                             <div class="stat-label">Status</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number"><?= $user['role'] ?></div>
+                            <div class="stat-number"><?= $user['role'] ?? 'user' ?></div>
                             <div class="stat-label">Role</div>
                         </div>
                     </div>

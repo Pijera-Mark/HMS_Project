@@ -195,4 +195,162 @@ class PatientModel extends Model
         log_message('info', 'Patient deleted: ' . json_encode($data));
         return $data;
     }
+
+    /**
+     * Get patient demographics
+     */
+    public function getDemographics(array $filters = []): array
+    {
+        try {
+            $builder = $this->builder()
+                ->select('
+                    COUNT(*) as total_patients,
+                    AVG(YEAR(CURRENT_DATE) - YEAR(date_of_birth)) as average_age,
+                    SUM(CASE WHEN gender = "male" THEN 1 ELSE 0 END) as male_count,
+                    SUM(CASE WHEN gender = "female" THEN 1 ELSE 0 END) as female_count,
+                    SUM(CASE WHEN gender = "other" THEN 1 ELSE 0 END) as other_count,
+                    SUM(CASE WHEN blood_type = "A+" THEN 1 ELSE 0 END) as a_positive,
+                    SUM(CASE WHEN blood_type = "A-" THEN 1 ELSE 0 END) as a_negative,
+                    SUM(CASE WHEN blood_type = "B+" THEN 1 ELSE 0 END) as b_positive,
+                    SUM(CASE WHEN blood_type = "B-" THEN 1 ELSE 0 END) as b_negative,
+                    SUM(CASE WHEN blood_type = "AB+" THEN 1 ELSE 0 END) as ab_positive,
+                    SUM(CASE WHEN blood_type = "AB-" THEN 1 ELSE 0 END) as ab_negative,
+                    SUM(CASE WHEN blood_type = "O+" THEN 1 ELSE 0 END) as o_positive,
+                    SUM(CASE WHEN blood_type = "O-" THEN 1 ELSE 0 END) as o_negative
+                ');
+
+            if (!empty($filters['date_from'])) {
+                $builder->where('DATE(created_at) >=', $filters['date_from']);
+            }
+
+            if (!empty($filters['date_to'])) {
+                $builder->where('DATE(created_at) <=', $filters['date_to']);
+            }
+
+            if (!empty($filters['branch_id'])) {
+                $builder->where('branch_id', $filters['branch_id']);
+            }
+
+            $result = $builder->get()->getRowArray();
+            
+            // Debug logging
+            log_message('debug', 'Patient demographics query result: ' . json_encode($result));
+            
+            return [
+                'total_patients' => (int)($result['total_patients'] ?? 0),
+                'average_age' => round((float)($result['average_age'] ?? 0), 1),
+                'gender_distribution' => [
+                    'male' => (int)($result['male_count'] ?? 0),
+                    'female' => (int)($result['female_count'] ?? 0),
+                    'other' => (int)($result['other_count'] ?? 0)
+                ],
+                'blood_type_distribution' => [
+                    'A+' => (int)($result['a_positive'] ?? 0),
+                    'A-' => (int)($result['a_negative'] ?? 0),
+                    'B+' => (int)($result['b_positive'] ?? 0),
+                    'B-' => (int)($result['b_negative'] ?? 0),
+                    'AB+' => (int)($result['ab_positive'] ?? 0),
+                    'AB-' => (int)($result['ab_negative'] ?? 0),
+                    'O+' => (int)($result['o_positive'] ?? 0),
+                    'O-' => (int)($result['o_negative'] ?? 0)
+                ]
+            ];
+        } catch (\Exception $e) {
+            log_message('error', 'Error in getDemographics: ' . $e->getMessage());
+            return [
+                'total_patients' => 0,
+                'average_age' => 0,
+                'gender_distribution' => [
+                    'male' => 0,
+                    'female' => 0,
+                    'other' => 0
+                ],
+                'blood_type_distribution' => [
+                    'A+' => 0, 'A-' => 0, 'B+' => 0, 'B-' => 0,
+                    'AB+' => 0, 'AB-' => 0, 'O+' => 0, 'O-' => 0
+                ]
+            ];
+        }
+    }
+
+    /**
+     * Get new patients by period
+     */
+    public function getNewPatientsByPeriod(array $filters = []): array
+    {
+        $builder = $this->builder()
+            ->select('
+                DATE(created_at) as date,
+                COUNT(*) as new_patients
+            ')
+            ->groupBy('DATE(created_at)')
+            ->orderBy('date', 'DESC');
+
+        if (!empty($filters['date_from'])) {
+            $builder->where('DATE(created_at) >=', $filters['date_from']);
+        }
+
+        if (!empty($filters['date_to'])) {
+            $builder->where('DATE(created_at) <=', $filters['date_to']);
+        }
+
+        if (!empty($filters['branch_id'])) {
+            $builder->where('branch_id', $filters['branch_id']);
+        }
+
+        $results = $builder->get()->getResultArray();
+        
+        $formattedResults = [];
+        foreach ($results as $result) {
+            $formattedResults[] = [
+                'date' => $result['date'] ?? date('Y-m-d'),
+                'new_patients' => (int)($result['new_patients'] ?? 0)
+            ];
+        }
+        
+        return $formattedResults;
+    }
+
+    /**
+     * Get patient statistics
+     */
+    public function getPatientStatistics(array $filters = []): array
+    {
+        $builder = $this->builder()
+            ->select('
+                COUNT(*) as total_patients,
+                COUNT(CASE WHEN DATE(created_at) = CURDATE() THEN 1 END) as today_new,
+                COUNT(CASE WHEN DATE(created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) THEN 1 END) as yesterday_new,
+                COUNT(CASE WHEN DATE(created_at) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) THEN 1 END) as this_week,
+                COUNT(CASE WHEN DATE(created_at) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 END) as this_month,
+                COUNT(CASE WHEN status = "active" THEN 1 END) as active_patients,
+                COUNT(CASE WHEN status = "inactive" THEN 1 END) as inactive_patients
+            ');
+
+        if (!empty($filters['date_from'])) {
+            $builder->where('DATE(created_at) >=', $filters['date_from']);
+        }
+
+        if (!empty($filters['date_to'])) {
+            $builder->where('DATE(created_at) <=', $filters['date_to']);
+        }
+
+        if (!empty($filters['branch_id'])) {
+            $builder->where('branch_id', $filters['branch_id']);
+        }
+
+        $result = $builder->get()->getRowArray();
+        
+        return [
+            'total_patients' => (int)($result['total_patients'] ?? 0),
+            'today_new' => (int)($result['today_new'] ?? 0),
+            'yesterday_new' => (int)($result['yesterday_new'] ?? 0),
+            'this_week' => (int)($result['this_week'] ?? 0),
+            'this_month' => (int)($result['this_month'] ?? 0),
+            'active_patients' => (int)($result['active_patients'] ?? 0),
+            'inactive_patients' => (int)($result['inactive_patients'] ?? 0),
+            'growth_rate' => ($result['yesterday_new'] ?? 0) > 0 ? 
+                ((($result['today_new'] ?? 0) - ($result['yesterday_new'] ?? 0)) / ($result['yesterday_new'] ?? 1)) * 100 : 0
+        ];
+    }
 }
