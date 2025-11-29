@@ -284,4 +284,8 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) 
     $routes->post('lab-tests/(:num)/submit-result', 'LabTestController::submitResult/$1');
     $routes->post('lab-tests/(:num)/cancel', 'LabTestController::cancel/$1');
     $routes->delete('lab-tests/(:num)', 'LabTestController::delete/$1');
+
+    // Cleanup routes
+    $routes->get('cleanup/get-usage-stats', 'CleanupController::getUsageStats');
+    $routes->post('cleanup/cleanup', 'CleanupController::cleanup');
 });
