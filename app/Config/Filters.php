@@ -2,8 +2,7 @@
 
 namespace Config;
 
-use CodeIgniter\Config\Filters as BaseFilters;
-use CodeIgniter\Filters\Cors;
+use CodeIgniter\Config\BaseConfig;
 use CodeIgniter\Filters\CSRF;
 use CodeIgniter\Filters\DebugToolbar;
 use CodeIgniter\Filters\ForceHTTPS;
@@ -13,8 +12,12 @@ use CodeIgniter\Filters\PageCache;
 use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
 use App\Filters\AuthFilter;
+use App\Filters\ApiSecurityFilter;
+use App\Filters\CSRFProtectionFilter;
+use App\Filters\JWTAuthFilter;
+use App\Filters\RoleFilter;
 
-class Filters extends BaseFilters
+class Filters extends BaseConfig
 {
     /**
      * Configures aliases for Filter classes to
@@ -31,11 +34,15 @@ class Filters extends BaseFilters
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
-        'cors'          => Cors::class,
+        // 'cors'          => Cors::class,
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'auth'          => AuthFilter::class,
+        'apisecurity'   => ApiSecurityFilter::class,
+        'csrfprotection' => CSRFProtectionFilter::class,
+        'jwtauth'       => JWTAuthFilter::class,
+        'role'          => RoleFilter::class,
     ];
 
     /**
@@ -49,28 +56,24 @@ class Filters extends BaseFilters
      *
      * @see https://codeigniter.com/user_guide/incoming/filters.html#provided-filters
      *
-     * @var array{before: list<string>, after: list<string>}
+     * @var array<string, array<string, array<string, string>>|array<string, string>>|array<string, string>
      */
     public array $required = [
         'before' => [
-            'forcehttps', // Force Global Secure Requests
-            'pagecache',  // Web Page Caching
+            'forcehttps',
+            'pagecache',
         ],
         'after' => [
-            'pagecache',   // Web Page Caching
-            'performance', // Performance Metrics
-            'toolbar',     // Debug Toolbar
+            'pagecache',
+            'performance',
+            'toolbar',
         ],
     ];
 
     /**
-     * List of filter aliases that are always
-     * applied before and after every request.
+     * Filters that are always applied globally.
      *
-     * @var array{
-     *     before: array<string, array{except: list<string>|string}>|list<string>,
-     *     after: array<string, array{except: list<string>|string}>|list<string>
-     * }
+     * @var array<string, array<string, string>>|array<string, string>
      */
     public array $globals = [
         'before' => [
@@ -85,28 +88,23 @@ class Filters extends BaseFilters
     ];
 
     /**
-     * List of filter aliases that works on a
-     * particular HTTP method (GET, POST, etc.).
+     * Filters applied to HTTP methods.
      *
-     * Example:
-     * 'POST' => ['foo', 'bar']
-     *
-     * If you use this, you should disable auto-routing because auto-routing
-     * permits any HTTP method to access a controller. Accessing the controller
-     * with a method you don't expect could bypass the filter.
-     *
-     * @var array<string, list<string>>
+     * @var array<string, string>
      */
     public array $methods = [];
 
     /**
-     * List of filter aliases that should run on any
-     * before or after URI patterns.
+     * Filter aliases that are applied to specific URI patterns.
      *
      * Example:
      * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'apisecurity' => ['before' => ['api/*']],
+        'jwtauth' => ['before' => ['api/*']],
+        'csrfprotection' => ['before' => ['api/*'], 'except' => ['api/auth/*']],
+    ];
 }

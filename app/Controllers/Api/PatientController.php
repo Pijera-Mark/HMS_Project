@@ -2,11 +2,11 @@
 
 namespace App\Controllers\Api;
 
-use App\Controllers\BaseController;
+use App\Controllers\EnhancedBaseController;
 use App\Models\PatientModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
-class PatientController extends BaseController
+class PatientController extends EnhancedBaseController
 {
     protected $patientModel;
 
@@ -20,7 +20,17 @@ class PatientController extends BaseController
      */
     public function index()
     {
+        // Require authentication
+        if (!$this->requireAuth()) return;
+        
         $search = $this->request->getGet('search');
+        $cacheKey = 'patients_list_' . ($search ?? 'all');
+        
+        // Try to get from cache first
+        $cached = $this->getCachedData($cacheKey);
+        if ($cached !== null) {
+            return $this->sendSuccess($cached, 'Patients retrieved from cache');
+        }
         
         if ($search) {
             $patients = $this->patientModel
@@ -32,11 +42,11 @@ class PatientController extends BaseController
         } else {
             $patients = $this->patientModel->findAll();
         }
+        
+        // Cache the results
+        $this->cacheData($cacheKey, $patients, 300); // 5 minutes
 
-        return $this->response->setJSON([
-            'status' => 'success',
-            'data'   => $patients
-        ]);
+        return $this->sendSuccess($patients);
     }
 
     /**
@@ -44,19 +54,31 @@ class PatientController extends BaseController
      */
     public function show($id = null)
     {
+        // Require authentication
+        if (!$this->requireAuth()) return;
+        
+        if (!$id) {
+            return $this->sendValidationError(['id' => 'Patient ID is required']);
+        }
+        
+        $cacheKey = 'patient_' . $id;
+        
+        // Try cache first
+        $cached = $this->getCachedData($cacheKey);
+        if ($cached !== null) {
+            return $this->sendSuccess($cached, 'Patient retrieved from cache');
+        }
+        
         $patient = $this->patientModel->find($id);
 
         if (!$patient) {
-            return $this->response->setStatusCode(404)->setJSON([
-                'status'  => 'error',
-                'message' => 'Patient not found'
-            ]);
+            return $this->sendNotFound('Patient not found');
         }
+        
+        // Cache for 10 minutes
+        $this->cacheData($cacheKey, $patient, 600);
 
-        return $this->response->setJSON([
-            'status' => 'success',
-            'data'   => $patient
-        ]);
+        return $this->sendSuccess($patient);
     }
 
     /**
@@ -64,21 +86,41 @@ class PatientController extends BaseController
      */
     public function create()
     {
-        $data = $this->request->getJSON(true);
+        // Require authentication and proper role
+        if (!$this->requireRole(['admin', 'doctor', 'receptionist'])) return;
+        
+        // Validate input
+        $rules = [
+            'first_name' => 'required|min_length[2]|max_length[50]',
+            'last_name' => 'required|min_length[2]|max_length[50]',
+            'email' => 'required|valid_email|is_unique[patients.email]',
+            'phone' => 'required|min_length[10]|max_length[15]',
+            'date_of_birth' => 'required|valid_date',
+            'gender' => 'required|in_list[male,female,other]'
+        ];
+        
+        if (!$this->validateRequest($rules)) return;
+        
+        $data = $this->sanitizeInput($this->getJsonData());
 
         if ($this->patientModel->insert($data)) {
-            return $this->response->setStatusCode(201)->setJSON([
-                'status'  => 'success',
-                'message' => 'Patient created successfully',
-                'data'    => $this->patientModel->find($this->patientModel->getInsertID())
+            $patientId = $this->patientModel->getInsertID();
+            $patient = $this->patientModel->find($patientId);
+            
+            // Clear relevant caches
+            $this->clearCache('patients_list_all');
+            
+            // Log activity
+            $this->logActivity('patient_created', [
+                'entity_type' => 'patient',
+                'entity_id' => $patientId,
+                'details' => 'New patient created: ' . $data['first_name'] . ' ' . $data['last_name']
             ]);
+            
+            return $this->sendSuccess($patient, 'Patient created successfully', 201);
         }
 
-        return $this->response->setStatusCode(400)->setJSON([
-            'status'  => 'error',
-            'message' => 'Failed to create patient',
-            'errors'  => $this->patientModel->errors()
-        ]);
+        return $this->sendValidationError($this->patientModel->errors());
     }
 
     /**
@@ -86,28 +128,49 @@ class PatientController extends BaseController
      */
     public function update($id = null)
     {
-        $data = $this->request->getJSON(true);
+        // Require authentication and proper role
+        if (!$this->requireRole(['admin', 'doctor', 'receptionist'])) return;
+        
+        if (!$id) {
+            return $this->sendValidationError(['id' => 'Patient ID is required']);
+        }
+        
+        // Validate input
+        $rules = [
+            'first_name' => 'if_exists|min_length[2]|max_length[50]',
+            'last_name' => 'if_exists|min_length[2]|max_length[50]',
+            'email' => 'if_exists|valid_email|is_unique[patients.email,id,' . $id . ']',
+            'phone' => 'if_exists|min_length[10]|max_length[15]',
+            'date_of_birth' => 'if_exists|valid_date',
+            'gender' => 'if_exists|in_list[male,female,other]'
+        ];
+        
+        if (!$this->validateRequest($rules)) return;
+        
+        $data = $this->sanitizeInput($this->getJsonData());
 
         if (!$this->patientModel->find($id)) {
-            return $this->response->setStatusCode(404)->setJSON([
-                'status'  => 'error',
-                'message' => 'Patient not found'
-            ]);
+            return $this->sendNotFound('Patient not found');
         }
 
         if ($this->patientModel->update($id, $data)) {
-            return $this->response->setJSON([
-                'status'  => 'success',
-                'message' => 'Patient updated successfully',
-                'data'    => $this->patientModel->find($id)
+            $patient = $this->patientModel->find($id);
+            
+            // Clear caches
+            $this->clearCache('patient_' . $id);
+            $this->clearCache('patients_list_all');
+            
+            // Log activity
+            $this->logActivity('patient_updated', [
+                'entity_type' => 'patient',
+                'entity_id' => $id,
+                'details' => 'Patient updated: ' . $data['first_name'] ?? '' . ' ' . $data['last_name'] ?? ''
             ]);
+            
+            return $this->sendSuccess($patient, 'Patient updated successfully');
         }
 
-        return $this->response->setStatusCode(400)->setJSON([
-            'status'  => 'error',
-            'message' => 'Failed to update patient',
-            'errors'  => $this->patientModel->errors()
-        ]);
+        return $this->sendValidationError($this->patientModel->errors());
     }
 
     /**
@@ -115,23 +178,33 @@ class PatientController extends BaseController
      */
     public function delete($id = null)
     {
-        if (!$this->patientModel->find($id)) {
-            return $this->response->setStatusCode(404)->setJSON([
-                'status'  => 'error',
-                'message' => 'Patient not found'
-            ]);
+        // Require admin role for deletion
+        if (!$this->requireRole(['admin'])) return;
+        
+        if (!$id) {
+            return $this->sendValidationError(['id' => 'Patient ID is required']);
+        }
+        
+        $patient = $this->patientModel->find($id);
+        if (!$patient) {
+            return $this->sendNotFound('Patient not found');
         }
 
         if ($this->patientModel->delete($id)) {
-            return $this->response->setJSON([
-                'status'  => 'success',
-                'message' => 'Patient deleted successfully'
+            // Clear caches
+            $this->clearCache('patient_' . $id);
+            $this->clearCache('patients_list_all');
+            
+            // Log activity
+            $this->logActivity('patient_deleted', [
+                'entity_type' => 'patient',
+                'entity_id' => $id,
+                'details' => 'Patient deleted: ' . $patient['first_name'] . ' ' . $patient['last_name']
             ]);
+            
+            return $this->sendSuccess(null, 'Patient deleted successfully');
         }
 
-        return $this->response->setStatusCode(400)->setJSON([
-            'status'  => 'error',
-            'message' => 'Failed to delete patient'
-        ]);
+        return $this->sendServerError('Failed to delete patient');
     }
 }

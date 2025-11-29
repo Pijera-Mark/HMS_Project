@@ -39,6 +39,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('patients/update/(:num)', 'PatientController::update/$1');
     $routes->get('patients/delete/(:num)', 'PatientController::delete/$1');
 
+    // User Management Routes
     $routes->get('users', 'UserController::index');
     $routes->get('users/new', 'UserController::new');
     $routes->post('users/create', 'UserController::create');
@@ -46,6 +47,16 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('users/reset-password/(:num)', 'UserController::updatePassword/$1');
     $routes->get('users/edit/(:num)', 'UserController::edit/$1');
     $routes->post('users/update/(:num)', 'UserController::update/$1');
+
+    // Profile Management Routes
+    $routes->get('profile', 'ProfileController::index');
+    $routes->get('profile/edit', 'ProfileController::edit');
+    $routes->post('profile/update', 'ProfileController::update');
+    $routes->post('profile/uploadPicture', 'ProfileController::uploadPicture');
+    $routes->get('profile/security', 'ProfileController::security');
+    $routes->post('profile/updatePassword', 'ProfileController::updatePassword');
+    $routes->post('profile/updateNotifications', 'ProfileController::updateNotifications');
+    $routes->get('profile/statistics', 'ProfileController::statistics');
 
     $routes->get('branches', 'BranchController::index');
     $routes->get('branches/new', 'BranchController::new');
@@ -85,21 +96,81 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('invoices/mark-paid/(:num)', 'InvoiceController::markPaid/$1');
     $routes->get('invoices/delete/(:num)', 'InvoiceController::delete/$1');
 
-    // Missing routes for sidebar features
-    $routes->get('doctors', 'UserController::index'); // Using UserController for doctors temporarily
-    $routes->get('wards', 'DashboardController::wards'); // Temporary route
-    $routes->get('medical-records', 'DashboardController::medicalRecords'); // Temporary route
-    $routes->get('prescriptions', 'DashboardController::prescriptions'); // Temporary route
-    $routes->get('lab-tests', 'DashboardController::labTests'); // Temporary route
-    $routes->get('reports/financial', 'DashboardController::financialReports'); // Temporary route
-    $routes->get('reports/patient', 'DashboardController::patientReports'); // Temporary route
-    $routes->get('reports/audit', 'DashboardController::auditTrail'); // Temporary route
-    $routes->get('profile', 'DashboardController::profile'); // Temporary route
-    $routes->get('help', 'DashboardController::help'); // Temporary route
+    // Doctor Management Routes
+    $routes->get('doctors', 'DoctorController::index');
+    $routes->get('doctors/create', 'DoctorController::create');
+    $routes->post('doctors', 'DoctorController::store');
+    $routes->get('doctors/(:num)', 'DoctorController::show/$1');
+    $routes->get('doctors/edit/(:num)', 'DoctorController::edit/$1');
+    $routes->post('doctors/update/(:num)', 'DoctorController::update/$1');
+    $routes->post('doctors/delete/(:num)', 'DoctorController::delete/$1');
+    $routes->get('doctors/(:num)/schedule', 'DoctorController::schedule/$1');
+    $routes->get('doctors/available', 'DoctorController::available');
+    $routes->post('doctors/change-status/(:num)', 'DoctorController::changeStatus/$1');
+
+    // Ward Management Routes
+    $routes->get('wards', 'WardController::index');
+    $routes->get('wards/create', 'WardController::create');
+    $routes->post('wards', 'WardController::store');
+    $routes->get('wards/(:num)', 'WardController::show/$1');
+    $routes->get('wards/edit/(:num)', 'WardController::edit/$1');
+    $routes->post('wards/update/(:num)', 'WardController::update/$1');
+    $routes->post('wards/delete/(:num)', 'WardController::delete/$1');
+
+    // Medical Records Routes
+    $routes->get('medical-records', 'MedicalRecordController::index');
+    $routes->get('medical-records/create', 'MedicalRecordController::create');
+    $routes->post('medical-records', 'MedicalRecordController::store');
+    $routes->get('medical-records/(:num)', 'MedicalRecordController::show/$1');
+    $routes->get('medical-records/edit/(:num)', 'MedicalRecordController::edit/$1');
+    $routes->post('medical-records/update/(:num)', 'MedicalRecordController::update/$1');
+    $routes->post('medical-records/delete/(:num)', 'MedicalRecordController::delete/$1');
+    $routes->get('medical-records/patient/(:num)', 'MedicalRecordController::patientHistory/$1');
+
+    // Prescriptions Routes
+    $routes->get('prescriptions', 'PrescriptionController::index');
+    $routes->get('prescriptions/create', 'PrescriptionController::create');
+    $routes->post('prescriptions', 'PrescriptionController::store');
+    $routes->get('prescriptions/(:num)', 'PrescriptionController::show/$1');
+    $routes->get('prescriptions/edit/(:num)', 'PrescriptionController::edit/$1');
+    $routes->post('prescriptions/update/(:num)', 'PrescriptionController::update/$1');
+    $routes->post('prescriptions/delete/(:num)', 'PrescriptionController::delete/$1');
+    $routes->post('prescriptions/update-status/(:num)', 'PrescriptionController::updateStatus/$1');
+    $routes->get('prescriptions/patient/(:num)', 'PrescriptionController::patientPrescriptions/$1');
+
+    // Lab Tests Routes
+    $routes->get('lab-tests', 'LabTestController::index');
+    $routes->get('lab-tests/create', 'LabTestController::create');
+    $routes->post('lab-tests', 'LabTestController::store');
+    $routes->get('lab-tests/(:num)', 'LabTestController::show/$1');
+    $routes->get('lab-tests/edit/(:num)', 'LabTestController::edit/$1');
+    $routes->post('lab-tests/update/(:num)', 'LabTestController::update/$1');
+    $routes->post('lab-tests/delete/(:num)', 'LabTestController::delete/$1');
+    $routes->post('lab-tests/update-status/(:num)', 'LabTestController::updateStatus/$1');
+    $routes->post('lab-tests/upload-results/(:num)', 'LabTestController::uploadResults/$1');
+    $routes->get('lab-tests/patient/(:num)', 'LabTestController::patientTests/$1');
+
+    // Reports Routes
+    $routes->get('reports/financial', 'ReportsController::financial');
+    $routes->get('reports/patient', 'ReportsController::patient');
+    $routes->get('reports/audit', 'ReportsController::audit');
+    $routes->get('reports/export/(:any)', 'ReportsController::export/$1');
+
+    // Help & Support Routes
+    $routes->get('help', 'HelpController::index');
+    $routes->get('help/category/(:any)', 'HelpController::category/$1');
+    $routes->get('help/article/(:any)', 'HelpController::article/$1');
+    $routes->get('help/search', 'HelpController::search');
+    $routes->get('help/contact', 'HelpController::contact');
+    $routes->post('help/contact', 'HelpController::submitTicket');
+    $routes->get('help/my-tickets', 'HelpController::myTickets');
+    $routes->get('help/ticket/(:num)', 'HelpController::ticket/$1');
+    $routes->post('help/ticket/(:num)', 'HelpController::replyTicket/$1');
 });
 
+
 // API Routes
-$routes->group('api/v1', ['namespace' => 'App\Controllers\Api'], function($routes) {
+$routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) {
     // Authentication routes
     $routes->post('auth/login', 'AuthController::login');
     $routes->post('auth/register', 'AuthController::register');
@@ -167,11 +238,13 @@ $routes->group('api/v1', ['namespace' => 'App\Controllers\Api'], function($route
     $routes->get('dashboard/admission-stats', 'DashboardController::admissionStats');
     $routes->get('dashboard/financial-overview', 'DashboardController::financialOverview');
 
-    // Report routes
-    $routes->get('reports/patients', 'ReportController::patients');
-    $routes->get('reports/appointments', 'ReportController::appointments');
-    $routes->get('reports/admissions', 'ReportController::admissions');
-    $routes->get('reports/financial', 'ReportController::financial');
+    // Profile API Routes
+    $routes->get('profile', 'ProfileController::index');
+    $routes->put('profile', 'ProfileController::update');
+    $routes->post('profile/upload-picture', 'ProfileController::uploadPicture');
+    $routes->put('profile/security', 'ProfileController::updateSecurity');
+    $routes->get('profile/statistics', 'ProfileController::statistics');
+    $routes->delete('profile', 'ProfileController::deleteAccount');
 
     // Ward routes
     $routes->get('wards', 'WardController::index');
