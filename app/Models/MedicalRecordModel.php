@@ -52,8 +52,8 @@ class MedicalRecordModel extends Model
             ->select('medical_records.*, patients.first_name as patient_first_name, patients.last_name as patient_last_name, 
                      doctors.first_name as doctor_first_name, doctors.last_name as doctor_last_name,
                      branches.name as branch_name')
-            ->join('patients', 'patients.id = medical_records.patient_id', 'left')
-            ->join('doctors', 'doctors.id = medical_records.doctor_id', 'left')
+            ->join('patients', 'patients.patient_id = medical_records.patient_id', 'left')
+            ->join('doctors', 'doctors.doctor_id = medical_records.doctor_id', 'left')
             ->join('branches', 'branches.id = medical_records.branch_id', 'left');
 
         if (!empty($filters['patient_id'])) {
@@ -108,8 +108,8 @@ class MedicalRecordModel extends Model
             ->select('medical_records.*, patients.first_name as patient_first_name, patients.last_name as patient_last_name,
                      doctors.first_name as doctor_first_name, doctors.last_name as doctor_last_name,
                      branches.name as branch_name')
-            ->join('patients', 'patients.id = medical_records.patient_id', 'left')
-            ->join('doctors', 'doctors.id = medical_records.doctor_id', 'left')
+            ->join('patients', 'patients.patient_id = medical_records.patient_id', 'left')
+            ->join('doctors', 'doctors.doctor_id = medical_records.doctor_id', 'left')
             ->join('branches', 'branches.id = medical_records.branch_id', 'left')
             ->where('medical_records.id', $id)
             ->get()
@@ -141,7 +141,7 @@ class MedicalRecordModel extends Model
     {
         return $this->builder()
             ->select('medical_records.*, doctors.first_name as doctor_first_name, doctors.last_name as doctor_last_name')
-            ->join('doctors', 'doctors.id = medical_records.doctor_id', 'left')
+            ->join('doctors', 'doctors.doctor_id = medical_records.doctor_id', 'left')
             ->where('medical_records.patient_id', $patientId)
             ->orderBy('medical_records.visit_date', 'DESC')
             ->get()

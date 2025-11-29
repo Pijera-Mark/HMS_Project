@@ -53,8 +53,8 @@ class PrescriptionModel extends Model
             ->select('prescriptions.*, patients.first_name as patient_first_name, patients.last_name as patient_last_name,
                      doctors.first_name as doctor_first_name, doctors.last_name as doctor_last_name,
                      medicines.name as medicine_name, branches.name as branch_name')
-            ->join('patients', 'patients.id = prescriptions.patient_id', 'left')
-            ->join('doctors', 'doctors.id = prescriptions.doctor_id', 'left')
+            ->join('patients', 'patients.patient_id = prescriptions.patient_id', 'left')
+            ->join('doctors', 'doctors.doctor_id = prescriptions.doctor_id', 'left')
             ->join('medicines', 'medicines.id = prescriptions.medicine_id', 'left')
             ->join('branches', 'branches.id = prescriptions.branch_id', 'left');
 
@@ -118,8 +118,8 @@ class PrescriptionModel extends Model
                      doctors.first_name as doctor_first_name, doctors.last_name as doctor_last_name,
                      medicines.name as medicine_name, medicines.type as medicine_type,
                      branches.name as branch_name')
-            ->join('patients', 'patients.id = prescriptions.patient_id', 'left')
-            ->join('doctors', 'doctors.id = prescriptions.doctor_id', 'left')
+            ->join('patients', 'patients.patient_id = prescriptions.patient_id', 'left')
+            ->join('doctors', 'doctors.doctor_id = prescriptions.doctor_id', 'left')
             ->join('medicines', 'medicines.id = prescriptions.medicine_id', 'left')
             ->join('branches', 'branches.id = prescriptions.branch_id', 'left')
             ->where('prescriptions.id', $id)

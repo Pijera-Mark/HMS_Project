@@ -53,8 +53,8 @@ class LabTestModel extends Model
             ->select('lab_tests.*, patients.first_name as patient_first_name, patients.last_name as patient_last_name,
                      doctors.first_name as doctor_first_name, doctors.last_name as doctor_last_name,
                      branches.name as branch_name')
-            ->join('patients', 'patients.id = lab_tests.patient_id', 'left')
-            ->join('doctors', 'doctors.id = lab_tests.doctor_id', 'left')
+            ->join('patients', 'patients.patient_id = lab_tests.patient_id', 'left')
+            ->join('doctors', 'doctors.doctor_id = lab_tests.doctor_id', 'left')
             ->join('branches', 'branches.id = lab_tests.branch_id', 'left');
 
         if (!empty($filters['patient_id'])) {
@@ -117,8 +117,8 @@ class LabTestModel extends Model
             ->select('lab_tests.*, patients.first_name as patient_first_name, patients.last_name as patient_last_name,
                      doctors.first_name as doctor_first_name, doctors.last_name as doctor_last_name,
                      branches.name as branch_name')
-            ->join('patients', 'patients.id = lab_tests.patient_id', 'left')
-            ->join('doctors', 'doctors.id = lab_tests.doctor_id', 'left')
+            ->join('patients', 'patients.patient_id = lab_tests.patient_id', 'left')
+            ->join('doctors', 'doctors.doctor_id = lab_tests.doctor_id', 'left')
             ->join('branches', 'branches.id = lab_tests.branch_id', 'left')
             ->where('lab_tests.id', $id)
             ->get()
@@ -214,7 +214,7 @@ class LabTestModel extends Model
     {
         return $this->builder()
             ->select('lab_tests.*, patients.first_name as patient_first_name, patients.last_name as patient_last_name')
-            ->join('patients', 'patients.id = lab_tests.patient_id', 'left')
+            ->join('patients', 'patients.patient_id = lab_tests.patient_id', 'left')
             ->where('lab_tests.status', 'ordered')
             ->orderBy('lab_tests.test_date', 'ASC')
             ->get()

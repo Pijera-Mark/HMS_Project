@@ -46,11 +46,11 @@ class WardModel extends Model
     public function getWardsWithFilters(array $filters = []): array
     {
         $builder = $this->builder()
-            ->select('wards.*, branches.name as branch_name')
-            ->join('branches', 'branches.id = wards.branch_id', 'left');
+            ->select('wards.*');
 
         if (!empty($filters['branch_id'])) {
-            $builder->where('wards.branch_id', $filters['branch_id']);
+            // Skip branch filter for now since branch_id column doesn't exist
+            // $builder->where('wards.branch_id', $filters['branch_id']);
         }
 
         if (!empty($filters['status'])) {
