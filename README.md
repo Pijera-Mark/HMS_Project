@@ -74,3 +74,24 @@ The HMS project follows a modular structure with enhanced security and performan
 - `/app/Config/` - Configuration files
 - `/public/` - Public assets and entry point
 - `/writable/` - Writable directory for logs and cache
+
+## Security Features
+
+This HMS implementation includes comprehensive security measures:
+
+- Advanced authentication with JWT tokens
+- CSRF protection for all forms
+- Security audit logging
+- Input sanitization and validation
+- Rate limiting and IP blocking
+- Encrypted sensitive data storage
+- Session management with timeout
+- Multi-layer security filters
+
+## Performance Optimizations
+
+- Multi-level caching system (memory and file)
+- Database query optimization
+- Performance monitoring and analytics
+- Automatic cache warming
+- Resource usage tracking
