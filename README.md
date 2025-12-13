@@ -62,5 +62,15 @@ Additionally, make sure that the following extensions are enabled in your PHP:
 - json (enabled by default - don't turn it off)
 - [mysqli](http://php.net/manual/en/mysqli.installation.php) if you plan to use MySQL
 - [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
-# HMS Project
-## Hospital Management System
+
+## Project Structure
+
+The HMS project follows a modular structure with enhanced security and performance features:
+
+- `/app/Controllers/` - All application controllers
+- `/app/Models/` - Database models and business logic
+- `/app/Views/` - View templates and frontend components
+- `/app/Libraries/` - Custom libraries including Security and JWT libraries
+- `/app/Config/` - Configuration files
+- `/public/` - Public assets and entry point
+- `/writable/` - Writable directory for logs and cache
