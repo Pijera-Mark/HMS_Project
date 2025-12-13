@@ -8,38 +8,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="<?= base_url('css/custom.css') ?>" rel="stylesheet">
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="<?= base_url() ?>">
-                <i class="fas fa-hospital-alt me-2"></i>HMS
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url() ?>">
-                            <i class="fas fa-home me-1"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('profile') ?>">
-                            <i class="fas fa-user me-1"></i>Profile
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('logout') ?>">
-                            <i class="fas fa-sign-out-alt me-1"></i>Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<body class="sidebar-layout">
+<!-- Sidebar -->
+<?php if (session()->get('user')): ?>
+<?= view('components/sidebar', ['user' => session()->get('user'), 'stats' => $stats ?? []]) ?>
+<?php endif; ?>
 
+<!-- Main Content -->
+<div class="main-content" style="margin-left: 280px; min-height: 100vh; padding: 20px;">
     <div class="container mt-4">
         <div class="row">
             <div class="col-lg-8 mx-auto">
@@ -150,6 +126,16 @@
                                                    <?= ($notification_preferences['system_updates'] ?? false) ? 'checked' : '' ?>>
                                             <label class="form-check-label">System Updates</label>
                                         </div>
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" name="preferences[security_alerts]" value="1"
+                                                   <?= ($notification_preferences['security_alerts'] ?? true) ? 'checked' : '' ?>>
+                                            <label class="form-check-label">Security Alerts</label>
+                                        </div>
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" name="preferences[maintenance_notices]" value="1"
+                                                   <?= ($notification_preferences['maintenance_notices'] ?? true) ? 'checked' : '' ?>>
+                                            <label class="form-check-label">Maintenance Notices</label>
+                                        </div>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">
@@ -189,6 +175,183 @@
                                             <strong>Email Verified</strong>
                                             <div class="text-muted">Your email is verified</div>
                                         </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="fas fa-check-circle text-success me-3"></i>
+                                        <div>
+                                            <strong>Account Active</strong>
+                                            <div class="text-muted">Your account is in good standing</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Session Management -->
+                        <div class="mb-5">
+                            <h5 class="mb-3">
+                                <i class="fas fa-laptop me-2"></i>Active Sessions
+                            </h5>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Manage your active sessions and sign out from other devices.
+                            </div>
+                            <div class="list-group">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-bold">Current Session</div>
+                                        <small class="text-muted">This browser - <?= date('M j, Y, g:i A') ?></small>
+                                    </div>
+                                    <span class="badge bg-success">Active</span>
+                                </div>
+                                <!-- Additional sessions would be listed here -->
+                            </div>
+                            <button class="btn btn-outline-danger btn-sm mt-3" disabled>
+                                <i class="fas fa-sign-out-alt me-2"></i>Sign Out All Other Sessions
+                            </button>
+                            <small class="text-muted d-block mt-2">Session management feature coming soon</small>
+                        </div>
+
+                        <hr>
+
+                        <!-- Login Activity -->
+                        <div class="mb-5">
+                            <h5 class="mb-3">
+                                <i class="fas fa-history me-2"></i>Recent Login Activity
+                            </h5>
+                            <div class="list-group">
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-bold">Current Login</div>
+                                            <small class="text-muted">IP: <?= $_SERVER['REMOTE_ADDR'] ?? 'Unknown' ?> - <?= date('M j, Y, g:i A') ?></small>
+                                        </div>
+                                        <span class="badge bg-success">Current</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="/reports/audit" class="btn btn-outline-info btn-sm mt-3">
+                                <i class="fas fa-chart-line me-2"></i>View Full Activity Log
+                            </a>
+                        </div>
+
+                        <hr>
+
+                        <!-- Account Recovery -->
+                        <div class="mb-5">
+                            <h5 class="mb-3">
+                                <i class="fas fa-life-ring me-2"></i>Account Recovery Options
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-secondary">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-envelope fa-2x text-primary mb-3"></i>
+                                            <h6 class="card-title">Email Recovery</h6>
+                                            <p class="card-text small">Recover your account via email verification</p>
+                                            <div class="badge bg-success">Configured</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-secondary">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-phone fa-2x text-muted mb-3"></i>
+                                            <h6 class="card-title">Phone Recovery</h6>
+                                            <p class="card-text small">Recover your account via SMS verification</p>
+                                            <div class="badge bg-secondary">Not Available</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3" style="z-index: 1050;">
+            <i class="fas fa-check-circle me-2"></i><?= session()->getFlashdata('success') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')): ?>
+        <div class="alert alert-danger alert-dismissible fade show position-fixed top-0 end-0 m-3" style="z-index: 1050;">
+            <i class="fas fa-exclamation-circle me-2"></i><?= session()->getFlashdata('error') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Password strength checker
+        document.getElementById('new_password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strength = checkPasswordStrength(password);
+            
+            // Update password strength indicator if needed
+            if (password.length > 0) {
+                if (strength >= 3) {
+                    e.target.classList.remove('is-invalid');
+                    e.target.classList.add('is-valid');
+                } else {
+                    e.target.classList.remove('is-valid');
+                    e.target.classList.add('is-invalid');
+                }
+            }
+        });
+
+        // Password confirmation checker
+        document.getElementById('confirm_password').addEventListener('input', function(e) {
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = e.target.value;
+            
+            if (confirmPassword.length > 0) {
+                if (newPassword === confirmPassword) {
+                    e.target.classList.remove('is-invalid');
+                    e.target.classList.add('is-valid');
+                } else {
+                    e.target.classList.remove('is-valid');
+                    e.target.classList.add('is-invalid');
+                }
+            }
+        });
+
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/)) strength++;
+            if (password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+            return strength;
+        }
+
+        // Form validation
+        (function () {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+</div>
+</body>
+</html>
                                     </div>
                                     <div class="d-flex align-items-center mb-3">
                                         <i class="fas fa-check-circle text-success me-3"></i>

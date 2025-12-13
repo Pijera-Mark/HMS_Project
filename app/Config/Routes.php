@@ -34,6 +34,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('patients', 'PatientController::index');
     $routes->get('patients/show/(:num)', 'PatientController::show/$1');
     $routes->get('patients/new', 'PatientController::new');
+    $routes->get('patients/create', 'PatientController::new');
     $routes->post('patients/create', 'PatientController::create');
     $routes->get('patients/edit/(:num)', 'PatientController::edit/$1');
     $routes->post('patients/update/(:num)', 'PatientController::update/$1');
@@ -100,6 +101,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('doctors', 'DoctorController::index');
     $routes->get('doctors/create', 'DoctorController::create');
     $routes->post('doctors', 'DoctorController::store');
+    $routes->post('doctors/store', 'DoctorController::store');
     $routes->get('doctors/(:num)', 'DoctorController::show/$1');
     $routes->get('doctors/edit/(:num)', 'DoctorController::edit/$1');
     $routes->post('doctors/update/(:num)', 'DoctorController::update/$1');
@@ -112,6 +114,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('wards', 'WardController::index');
     $routes->get('wards/create', 'WardController::create');
     $routes->post('wards', 'WardController::store');
+    $routes->post('wards/store', 'WardController::store'); // Added for backward compatibility
     $routes->get('wards/(:num)', 'WardController::show/$1');
     $routes->get('wards/edit/(:num)', 'WardController::edit/$1');
     $routes->post('wards/update/(:num)', 'WardController::update/$1');
@@ -131,6 +134,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('prescriptions', 'PrescriptionController::index');
     $routes->get('prescriptions/create', 'PrescriptionController::create');
     $routes->post('prescriptions', 'PrescriptionController::store');
+    $routes->post('prescriptions/store', 'PrescriptionController::store');
     $routes->get('prescriptions/(:num)', 'PrescriptionController::show/$1');
     $routes->get('prescriptions/edit/(:num)', 'PrescriptionController::edit/$1');
     $routes->post('prescriptions/update/(:num)', 'PrescriptionController::update/$1');

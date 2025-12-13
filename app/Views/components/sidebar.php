@@ -124,7 +124,6 @@ $userRole = $user['role'] ?? 'guest';
                     <i class="fas fa-tachometer-alt"></i>
                 </div>
                 <div class="menu-text">Dashboard</div>
-                <div class="menu-badge"><?= number_format($stats['today_appointments'] ?? 0) ?></div>
             </a>
 
             <?php if (canManagePatients($userRole)): ?>
@@ -133,7 +132,6 @@ $userRole = $user['role'] ?? 'guest';
                     <i class="fas fa-user-injured"></i>
                 </div>
                 <div class="menu-text">Patients</div>
-                <div class="menu-badge"><?= number_format($stats['total_patients'] ?? 0) ?></div>
             </a>
             <?php endif; ?>
 
@@ -143,7 +141,6 @@ $userRole = $user['role'] ?? 'guest';
                     <i class="fas fa-calendar-check"></i>
                 </div>
                 <div class="menu-text">Appointments</div>
-                <div class="menu-badge"><?= number_format($stats['today_appointments'] ?? 0) ?></div>
             </a>
             <?php endif; ?>
 
@@ -153,7 +150,6 @@ $userRole = $user['role'] ?? 'guest';
                     <i class="fas fa-hospital-user"></i>
                 </div>
                 <div class="menu-text">Admissions</div>
-                <div class="menu-badge"><?= number_format($stats['active_admissions'] ?? 0) ?></div>
             </a>
             <?php endif; ?>
 
@@ -195,9 +191,6 @@ $userRole = $user['role'] ?? 'guest';
                     <i class="fas fa-pills"></i>
                 </div>
                 <div class="menu-text">Medicine Inventory</div>
-                <?php if (($stats['low_stock_medicines'] ?? 0) > 0): ?>
-                <div class="menu-badge danger"><?= number_format($stats['low_stock_medicines'] ?? 0) ?></div>
-                <?php endif; ?>
             </a>
             <?php endif; ?>
 
@@ -207,9 +200,6 @@ $userRole = $user['role'] ?? 'guest';
                     <i class="fas fa-file-invoice-dollar"></i>
                 </div>
                 <div class="menu-text">Billing & Invoices</div>
-                <?php if (($stats['unpaid_invoices'] ?? 0) > 0): ?>
-                <div class="menu-badge warning"><?= number_format($stats['unpaid_invoices'] ?? 0) ?></div>
-                <?php endif; ?>
             </a>
             <?php endif; ?>
 
@@ -233,7 +223,6 @@ $userRole = $user['role'] ?? 'guest';
                     <i class="fas fa-user-md"></i>
                 </div>
                 <div class="menu-text">Doctors</div>
-                <div class="menu-badge"><?= number_format($stats['total_doctors'] ?? 0) ?></div>
             </a>
 
             <?php if (canManageUsers($userRole)): ?>
@@ -308,13 +297,7 @@ $userRole = $user['role'] ?? 'guest';
                 <div class="menu-text">My Profile</div>
             </a>
 
-            <a href="/profile/edit" class="menu-item <?= (strpos(current_url(), '/profile/edit') !== false) ? 'active' : '' ?>">
-                <div class="menu-icon">
-                    <i class="fas fa-edit"></i>
-                </div>
-                <div class="menu-text">Edit Profile</div>
-            </a>
-
+            
             <a href="/profile/security" class="menu-item <?= (strpos(current_url(), '/profile/security') !== false) ? 'active' : '' ?>">
                 <div class="menu-icon">
                     <i class="fas fa-shield-alt"></i>

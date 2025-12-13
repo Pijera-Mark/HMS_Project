@@ -197,7 +197,7 @@ class ReportsController extends BaseController
         }
 
         $filters = $this->request->getGet();
-        $format = $this->request->getGet('format', 'pdf');
+        $format = $this->request->getGet('format') ?? 'pdf';
 
         switch ($type) {
             case 'financial':

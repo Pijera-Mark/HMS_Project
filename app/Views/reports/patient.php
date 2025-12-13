@@ -219,21 +219,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $total = $data['demographics']['total_patients'] ?? 1; ?>
+                            <?php $total = $data['demographics']['total_patients'] ?? 0; ?>
                             <tr>
                                 <td>Male</td>
                                 <td><?= number_format($data['demographics']['gender_distribution']['male'] ?? 0) ?></td>
-                                <td><?= number_format((($data['demographics']['gender_distribution']['male'] ?? 0) / $total) * 100, 1) ?>%</td>
+                                <td><?= $total > 0 ? number_format((($data['demographics']['gender_distribution']['male'] ?? 0) / $total) * 100, 1) . '%' : '0.0%' ?></td>
                             </tr>
                             <tr>
                                 <td>Female</td>
                                 <td><?= number_format($data['demographics']['gender_distribution']['female'] ?? 0) ?></td>
-                                <td><?= number_format((($data['demographics']['gender_distribution']['female'] ?? 0) / $total) * 100, 1) ?>%</td>
+                                <td><?= $total > 0 ? number_format((($data['demographics']['gender_distribution']['female'] ?? 0) / $total) * 100, 1) . '%' : '0.0%' ?></td>
                             </tr>
                             <tr>
                                 <td>Other</td>
                                 <td><?= number_format($data['demographics']['gender_distribution']['other'] ?? 0) ?></td>
-                                <td><?= number_format((($data['demographics']['gender_distribution']['other'] ?? 0) / $total) * 100, 1) ?>%</td>
+                                <td><?= $total > 0 ? number_format((($data['demographics']['gender_distribution']['other'] ?? 0) / $total) * 100, 1) . '%' : '0.0%' ?></td>
                             </tr>
                         </tbody>
                     </table>
@@ -254,7 +254,7 @@
                                 <tr>
                                     <td><?= $type ?></td>
                                     <td><?= number_format($bloodTypes[$type] ?? 0) ?></td>
-                                    <td><?= number_format((($bloodTypes[$type] ?? 0) / $total) * 100, 1) ?>%</td>
+                                    <td><?= $total > 0 ? number_format((($bloodTypes[$type] ?? 0) / $total) * 100, 1) . '%' : '0.0%' ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

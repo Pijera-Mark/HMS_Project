@@ -121,7 +121,7 @@ class DoctorController extends BaseController
         $sanitizedData = $validation['data'];
 
         // Create doctor
-        if ($this->doctorModel->createDoctor($sanitizedData)) {
+        if ($this->doctorModel->save($sanitizedData)) {
             // Log activity
             $this->logActivity('doctor_created', [
                 'entity_type' => 'doctor',

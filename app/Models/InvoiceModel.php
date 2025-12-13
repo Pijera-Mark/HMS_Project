@@ -30,6 +30,7 @@ class InvoiceModel extends Model
     protected $validationRules      = [
         'invoice_number' => 'required|is_unique[invoices.invoice_number]',
         'patient_id'     => 'required|integer',
+        'admission_id'   => 'permit_empty|integer|is_not_unique[admissions.id]',
         'created_by'     => 'required|integer',
         'total_amount'   => 'required|decimal',
         'status'         => 'required|in_list[unpaid,paid,partially_paid]',

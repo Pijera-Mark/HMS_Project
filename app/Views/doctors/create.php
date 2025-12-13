@@ -26,7 +26,7 @@
                         </div>
                     <?php endif; ?>
 
-                    <form action="<?= site_url('doctors/store') ?>" method="post">
+                    <form action="<?= site_url('doctors') ?>" method="post">
                         <?= csrf_field() ?>
                         
                         <div class="row">

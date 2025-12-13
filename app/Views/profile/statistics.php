@@ -8,26 +8,15 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css" rel="stylesheet">
     <link href="<?= base_url('css/custom.css') ?>" rel="stylesheet">
-    <style>
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            transition: transform 0.3s ease;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        .stat-icon {
-            font-size: 2.5rem;
-            opacity: 0.8;
-            margin-bottom: 1rem;
-        }
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
+</head>
+<body class="sidebar-layout">
+<!-- Sidebar -->
+<?php if (session()->get('user')): ?>
+<?= view('components/sidebar', ['user' => session()->get('user'), 'stats' => $stats ?? []]) ?>
+<?php endif; ?>
+
+<!-- Main Content -->
+<div class="main-content" style="margin-left: 280px; min-height: 100vh; padding: 20px;">
             margin-bottom: 0.5rem;
         }
         .stat-label {

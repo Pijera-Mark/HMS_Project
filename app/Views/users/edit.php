@@ -23,8 +23,8 @@
                 <?= csrf_field() ?>
 
                 <div class="mb-3">
-                    <label class="form-label">Name</label>
-                    <input type="text" class="form-control" value="<?= esc($user['name']) ?>" disabled>
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="<?= esc($user['name']) ?>" required>
                 </div>
 
                 <div class="mb-3">
@@ -34,14 +34,21 @@
 
                 <div class="mb-3">
                     <label for="role" class="form-label">Role</label>
-                    <select class="form-select" id="role" name="role" required>
-                        <?php $roles = ['admin','doctor','nurse','receptionist','pharmacist','lab','accountant','it']; ?>
-                        <?php foreach ($roles as $role): ?>
-                            <option value="<?= esc($role) ?>" <?= ($user['role'] === $role) ? 'selected' : '' ?>>
-                                <?= ucfirst($role) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <?php if ($user['role'] === 'admin'): ?>
+                        <select class="form-select" id="role" name="role" disabled>
+                            <option value="admin" selected>Admin (Protected)</option>
+                        </select>
+                        <small class="form-text text-muted">Admin roles cannot be modified for security reasons.</small>
+                    <?php else: ?>
+                        <select class="form-select" id="role" name="role" required>
+                            <?php $roles = ['doctor','nurse','receptionist','pharmacist','lab','accountant','it']; ?>
+                            <?php foreach ($roles as $role): ?>
+                                <option value="<?= esc($role) ?>" <?= ($user['role'] === $role) ? 'selected' : '' ?>>
+                                    <?= ucfirst($role) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php endif; ?>
                 </div>
 
                 <div class="mb-3">

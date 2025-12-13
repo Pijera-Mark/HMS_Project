@@ -40,7 +40,7 @@ class PatientModel extends Model
     protected $validationRules      = [
         'first_name'     => 'required|min_length[2]|max_length[50]|alpha_space',
         'last_name'      => 'required|min_length[2]|max_length[50]|alpha_space',
-        'date_of_birth'  => 'required|valid_date|check_age',
+        'date_of_birth'  => 'required|valid_date',
         'gender'         => 'required|in_list[Male,Female,Other]',
         'blood_type'     => 'permit_empty|in_list[A+,A-,B+,B-,AB+,AB-,O+,O-]',
         'phone'          => 'required|min_length[10]|max_length[15]|regex_match[/^[\\+]?[0-9]{10,15}$/]',
@@ -63,8 +63,7 @@ class PatientModel extends Model
         ],
         'date_of_birth' => [
             'required' => 'Date of birth is required',
-            'valid_date' => 'Please enter a valid date of birth',
-            'check_age' => 'Patient must be between 0 and 150 years old'
+            'valid_date' => 'Please enter a valid date of birth'
         ],
         'gender' => [
             'required' => 'Gender is required',
@@ -106,6 +105,25 @@ class PatientModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = ['checkPatientDependencies'];
     protected $afterDelete    = ['logPatientDeletion'];
+
+    /**
+     * Override the validation method to add custom age validation
+     */
+    public function validate($data): bool
+    {
+        // First run the parent validation
+        $result = parent::validate($data);
+        
+        // If basic validation passes, check age validation
+        if ($result && isset($data['date_of_birth'])) {
+            if (!$this->validate_age($data['date_of_birth'])) {
+                $this->validation->setError('date_of_birth', 'Patient must be between 0 and 150 years old and date cannot be in the future');
+                $result = false;
+            }
+        }
+        
+        return $result;
+    }
 
     /**
      * Generate unique patient ID
@@ -194,6 +212,32 @@ class PatientModel extends Model
     {
         log_message('info', 'Patient deleted: ' . json_encode($data));
         return $data;
+    }
+
+    /**
+     * Custom validation method for age range (0-150 years) and future date check
+     */
+    public function validate_age(string $value): bool
+    {
+        try {
+            $dob = new \DateTime($value);
+            $today = new \DateTime();
+            $age = $dob->diff($today)->y;
+            
+            if ($age < 0 || $age > 150) {
+                return false;
+            }
+            
+            // Check if date is not in the future
+            if ($dob > $today) {
+                return false;
+            }
+            
+            return true;
+            
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**

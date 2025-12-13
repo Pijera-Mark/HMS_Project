@@ -8,38 +8,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="<?= base_url('css/custom.css') ?>" rel="stylesheet">
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="<?= base_url() ?>">
-                <i class="fas fa-hospital-alt me-2"></i>HMS
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url() ?>">
-                            <i class="fas fa-home me-1"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('profile') ?>">
-                            <i class="fas fa-user me-1"></i>Profile
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('logout') ?>">
-                            <i class="fas fa-sign-out-alt me-1"></i>Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<body class="sidebar-layout">
+<!-- Sidebar -->
+<?php if (session()->get('user')): ?>
+<?= view('components/sidebar', ['user' => session()->get('user'), 'stats' => $stats ?? []]) ?>
+<?php endif; ?>
 
+<!-- Main Content -->
+<div class="main-content" style="margin-left: 280px; min-height: 100vh; padding: 20px;">
     <div class="container mt-4">
         <div class="row">
             <div class="col-lg-8 mx-auto">
@@ -58,13 +34,13 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="name" name="name" 
-                                           value="<?= old('name', $user['name']) ?>" required>
+                                           value="<?= old('name', $user['name'] ?? '') ?>" required>
                                     <div class="invalid-feedback">Please provide your full name</div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="email" class="form-label">Email Address</label>
                                     <input type="email" class="form-control" id="email" 
-                                           value="<?= $user['email'] ?>" readonly>
+                                           value="<?= $user['email'] ?? '' ?>" readonly>
                                     <small class="text-muted">Email cannot be changed</small>
                                 </div>
                             </div>
@@ -72,7 +48,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="phone" class="form-label">Phone Number</label>
                                     <input type="tel" class="form-control" id="phone" name="phone" 
-                                           value="<?= old('phone', $user['phone']) ?>">
+                                           value="<?= old('phone', $user['phone'] ?? '') ?>">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="date_of_birth" class="form-label">Date of Birth</label>
@@ -85,22 +61,23 @@
                                     <label for="gender" class="form-label">Gender</label>
                                     <select class="form-select" id="gender" name="gender">
                                         <option value="">Select Gender</option>
-                                        <?php foreach ($genders as $gender): ?>
-                                            <option value="<?= $gender ?>" <?= old('gender', $profile['gender'] ?? '') == $gender ? 'selected' : '' ?>>
-                                                <?= ucfirst($gender) ?>
-                                            </option>
-                                        <?php endforeach; ?>
+                                        <option value="male" <?= old('gender', $profile['gender'] ?? '') == 'male' ? 'selected' : '' ?>>Male</option>
+                                        <option value="female" <?= old('gender', $profile['gender'] ?? '') == 'female' ? 'selected' : '' ?>>Female</option>
+                                        <option value="other" <?= old('gender', $profile['gender'] ?? '') == 'other' ? 'selected' : '' ?>>Other</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="blood_group" class="form-label">Blood Group</label>
                                     <select class="form-select" id="blood_group" name="blood_group">
                                         <option value="">Select Blood Group</option>
-                                        <?php foreach ($blood_groups as $bg): ?>
-                                            <option value="<?= $bg ?>" <?= old('blood_group', $profile['blood_group'] ?? '') == $bg ? 'selected' : '' ?>>
-                                                <?= $bg ?>
-                                            </option>
-                                        <?php endforeach; ?>
+                                        <option value="A+" <?= old('blood_group', $profile['blood_group'] ?? '') == 'A+' ? 'selected' : '' ?>>A+</option>
+                                        <option value="A-" <?= old('blood_group', $profile['blood_group'] ?? '') == 'A-' ? 'selected' : '' ?>>A-</option>
+                                        <option value="B+" <?= old('blood_group', $profile['blood_group'] ?? '') == 'B+' ? 'selected' : '' ?>>B+</option>
+                                        <option value="B-" <?= old('blood_group', $profile['blood_group'] ?? '') == 'B-' ? 'selected' : '' ?>>B-</option>
+                                        <option value="O+" <?= old('blood_group', $profile['blood_group'] ?? '') == 'O+' ? 'selected' : '' ?>>O+</option>
+                                        <option value="O-" <?= old('blood_group', $profile['blood_group'] ?? '') == 'O-' ? 'selected' : '' ?>>O-</option>
+                                        <option value="AB+" <?= old('blood_group', $profile['blood_group'] ?? '') == 'AB+' ? 'selected' : '' ?>>AB+</option>
+                                        <option value="AB-" <?= old('blood_group', $profile['blood_group'] ?? '') == 'AB-' ? 'selected' : '' ?>>AB-</option>
                                     </select>
                                 </div>
                             </div>

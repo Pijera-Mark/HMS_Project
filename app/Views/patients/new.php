@@ -82,9 +82,15 @@
                                     <label for="address" class="form-label"><i class="fas fa-map-marker-alt me-1"></i>Address</label>
                                     <textarea class="form-control" id="address" name="address" rows="3"><?= esc(old('address')) ?></textarea>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="emergency_contact" class="form-label"><i class="fas fa-phone-square me-1"></i>Emergency Contact</label>
-                                    <input type="text" class="form-control" id="emergency_contact" name="emergency_contact" value="<?= esc(old('emergency_contact')) ?>">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="emergency_contact" class="form-label"><i class="fas fa-user me-1"></i>Emergency Contact Name</label>
+                                        <input type="text" class="form-control" id="emergency_contact" name="emergency_contact" value="<?= esc(old('emergency_contact')) ?>">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="emergency_phone" class="form-label"><i class="fas fa-phone-square me-1"></i>Emergency Contact Phone *</label>
+                                        <input type="tel" class="form-control" id="emergency_phone" name="emergency_phone" value="<?= esc(old('emergency_phone')) ?>" required>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -99,6 +105,26 @@
                         </h2>
                         <div id="medical" class="accordion-collapse collapse" aria-labelledby="medicalHeading" data-bs-parent="#patientFormAccordion">
                             <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="blood_type" class="form-label"><i class="fas fa-tint me-1"></i>Blood Type</label>
+                                        <select class="form-select" id="blood_type" name="blood_type">
+                                            <option value="">Select Blood Type</option>
+                                            <option value="A+" <?= old('blood_type') === 'A+' ? 'selected' : '' ?>>A+</option>
+                                            <option value="A-" <?= old('blood_type') === 'A-' ? 'selected' : '' ?>>A-</option>
+                                            <option value="B+" <?= old('blood_type') === 'B+' ? 'selected' : '' ?>>B+</option>
+                                            <option value="B-" <?= old('blood_type') === 'B-' ? 'selected' : '' ?>>B-</option>
+                                            <option value="AB+" <?= old('blood_type') === 'AB+' ? 'selected' : '' ?>>AB+</option>
+                                            <option value="AB-" <?= old('blood_type') === 'AB-' ? 'selected' : '' ?>>AB-</option>
+                                            <option value="O+" <?= old('blood_type') === 'O+' ? 'selected' : '' ?>>O+</option>
+                                            <option value="O-" <?= old('blood_type') === 'O-' ? 'selected' : '' ?>>O-</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="allergies" class="form-label"><i class="fas fa-allergies me-1"></i>Allergies</label>
+                                        <input type="text" class="form-control" id="allergies" name="allergies" value="<?= esc(old('allergies')) ?>" placeholder="e.g., Penicillin, Peanuts">
+                                    </div>
+                                </div>
                                 <div class="mb-3">
                                     <label for="medical_history" class="form-label"><i class="fas fa-history me-1"></i>Medical History</label>
                                     <textarea class="form-control" id="medical_history" name="medical_history" rows="4"><?= esc(old('medical_history')) ?></textarea>

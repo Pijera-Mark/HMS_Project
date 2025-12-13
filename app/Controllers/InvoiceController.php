@@ -99,6 +99,22 @@ class InvoiceController extends BaseController
             $data['status'] = 'unpaid';
         }
 
+        // Validate admission_id if provided
+        if (!empty($data['admission_id'])) {
+            $admission = $this->admissionModel->find($data['admission_id']);
+            if (!$admission) {
+                return redirect()->back()->withInput()->with('errors', ['Admission ID not found']);
+            }
+            
+            // Check if admission belongs to the same patient
+            if ($admission['patient_id'] !== $data['patient_id']) {
+                return redirect()->back()->withInput()->with('errors', ['Admission does not belong to the selected patient']);
+            }
+        } else {
+            // Set admission_id to null if not provided
+            $data['admission_id'] = null;
+        }
+
         if (! $this->invoiceModel->save($data)) {
             return redirect()->back()->withInput()->with('errors', $this->invoiceModel->errors());
         }

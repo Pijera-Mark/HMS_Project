@@ -8,8 +8,14 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
+        // Disable foreign key checks temporarily
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
+        
         // Truncate the users table to erase all existing accounts
         $this->db->table('users')->truncate();
+        
+        // Re-enable foreign key checks
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
 
         $data = [
             [

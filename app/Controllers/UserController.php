@@ -172,11 +172,29 @@ class UserController extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('User not found');
         }
 
+        // Prevent role changes for admin accounts
+        if ($user['role'] === 'admin') {
+            $newRole = $this->request->getPost('role');
+            if ($newRole && $newRole !== 'admin') {
+                return redirect()->back()->with('errors', ['Admin roles cannot be modified for security reasons.']);
+            }
+        }
+
         $data = [
-            'role'      => $this->request->getPost('role'),
-            'branch_id' => $this->request->getPost('branch_id') ?: null,
-            'status'    => $this->request->getPost('status'),
+            'name'       => $this->request->getPost('name'),
+            'role'       => $this->request->getPost('role'),
+            'branch_id'  => $this->request->getPost('branch_id') ?: null,
+            'status'     => $this->request->getPost('status'),
         ];
+
+        // For admin users, only allow name, branch, and status changes, not role changes
+        if ($user['role'] === 'admin') {
+            $data = [
+                'name'       => $this->request->getPost('name'),
+                'branch_id'  => $this->request->getPost('branch_id') ?: null,
+                'status'     => $this->request->getPost('status'),
+            ];
+        }
 
         if (! $this->userModel->update($id, $data)) {
             return redirect()->back()->withInput()->with('errors', $this->userModel->errors());
